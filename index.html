@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Game</title>
+    <style>
+        body { 
+            margin: 0; padding: 0; background-color: #5c94fc; 
+            font-family: 'Courier New', sans-serif; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            height: 100vh; overflow: hidden; touch-action: none; 
+            user-select: none; -webkit-user-select: none; 
+            box-sizing: border-box;
+            overscroll-behavior: none;
+        }
+        
+        #topWrapper { display: flex; flex-direction: column; width: 95%; max-width: 500px; margin-bottom: 5px; position: relative; z-index: 10; gap: 5px; }
+        .top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        #uiPanel { color: white; font-size: 18px; font-weight: bold; text-shadow: 1px 1px #000; }
+        #settingsBtn { background: rgba(0, 0, 0, 0.4); border: 2px solid #fff; border-radius: 50%; color: white; font-size: 20px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        #settingsBtn:active { transform: scale(0.9); }
+        
+        .modal-menu { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 999; border-radius: 4px; }
+        .menu-title { color: #ffcc00; font-size: 20px; font-weight: bold; margin-bottom: 15px; text-align: center; width: 90%; text-shadow: 1px 1px #000; }
+        .menu-btn { width: 180px; height: 38px; background: #ffcc00; color: #000; font-size: 13px; margin: 5px; box-shadow: 0px 3px 0px #000; border: 3px solid #000; border-radius: 8px; font-weight: bold; cursor: pointer; flex-shrink: 0; }
+        .menu-btn:active { transform: translateY(3px); box-shadow: 0px 0px 0px #000; }
+        .close-btn { width: 110px; height: 35px; background: #ff4545; color: white; font-size: 12px; margin-top: 15px; box-shadow: 0px 3px 0px #000; border: 3px solid #000; border-radius: 8px; font-weight: bold; cursor: pointer; flex-shrink: 0; }
+        .close-btn:active { transform: translateY(3px); box-shadow: 0px 0px 0px #000; }
+        
+        .volume-container { display: flex; flex-direction: column; align-items: center; margin: 6px 0; width: 85%; color: white; font-weight: bold; font-size: 13px; }
+        .volume-slider { width: 100%; margin-top: 5px; cursor: pointer; accent-color: #ffcc00; }
+
+        .about-text { color: #fff; font-size: 14px; text-align: center; line-height: 1.6; width: 85%; margin-bottom: 10px; }
+
+        .lang-list { 
+            display: flex; flex-direction: column; align-items: center; 
+            max-height: 140px; overflow-y: scroll; width: 85%; padding: 5px; 
+            border: 2px dashed #ffcc00; border-radius: 6px; background: rgba(255,255,255,0.05);
+            touch-action: pan-y;
+        }
+        .lang-list::-webkit-scrollbar { width: 8px; }
+        .lang-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 4px; }
+        .lang-list::-webkit-scrollbar-thumb { background: #ffcc00; border-radius: 4px; border: 1px solid #000; }
+
+        #gameCanvas { background-color: #5c94fc; border: 4px solid #000; width: 95%; max-width: 500px; aspect-ratio: 4/3; position: relative; box-sizing: border-box; }
+        
+        button { border: 4px solid #000; border-radius: 12px; color: white; font-weight: bold; touch-action: none; cursor: pointer; }
+        .ctrl-btn { width: 65px; height: 65px; font-size: 24px; background: #ff4545; box-shadow: 0px 4px 0px #000; }
+        .ctrl-btn:active { transform: translateY(4px); box-shadow: 0px 0px 0px #000; }
+        
+        #jumpBtn { background: #ffcc00; width: 75px; height: 75px; font-size: 28px; }
+        
+        .action-group { display: flex; width: 95%; max-width: 500px; gap: 10px; margin-top: 5px; z-index: 10; }
+        #startBtn { flex: 2; height: 38px; background: #4cd137; font-size: 14px; box-shadow: 0px 4px 0px #000; }
+        #startBtn:active { transform: translateY(4px); box-shadow: 0px 0px 0px #000; }
+        #pauseBtn { flex: 1; height: 38px; background: #ea2027; font-size: 14px; box-shadow: 0px 4px 0px #000; }
+        #pauseBtn:active { transform: translateY(4px); box-shadow: 0px 0px 0px #000; }
+        
+        .download-container { width: 100%; text-decoration: none; display: block; }
+        .download-button { width: 100%; height: 34px; background: #00a8ff; font-size: 12px; box-shadow: 0px 3px 0px #000; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 8px; }
+        .download-button:active { transform: translateY(3px); box-shadow: 0px 3px 0px #000; }
+
+        #controlWrapper { display: flex; width: 95%; max-width: 500px; justify-content: space-between; margin-top: 10px; align-items: center; }
+        .move-group { display: flex; gap: 10px; }
+
+        @media (orientation: landscape) {
+            body { padding: 5px; justify-content: flex-start; }
+            #topWrapper { max-width: 420px; margin-bottom: 2px; }
+            #gameCanvas { height: 62vh; width: auto; aspect-ratio: 4/3; max-width: none; }
+            
+            .action-group { position: fixed; top: 10px; right: 10px; width: 180px; margin-top: 0; }
+            #startBtn, #pauseBtn { height: 34px; font-size: 11px; }
+            #settingsBtn { position: fixed; top: 10px; left: 10px; }
+            
+            #controlWrapper {
+                position: fixed;
+                left: 0; right: 0; bottom: 10px;
+                width: 100%; max-width: none;
+                padding: 0 30px;
+                box-sizing: border-box;
+                pointer-events: none; 
+            }
+            .move-group, #jumpBtn { pointer-events: auto; } 
+            .ctrl-btn { width: 70px; height: 70px; font-size: 26px; }
+            #jumpBtn { width: 80px; height: 80px; font-size: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="topWrapper">
+        <div class="top-row">
+            <div id="uiPanel"><span id="lbl-level">LEVEL</span>: <span id="level">1</span> | <span id="lbl-gold">GOLD</span>: <span id="score">0</span></div>
+            <div id="settingsBtn" onclick="openMainMenu()">⚙️</div>
+        </div>
+        <a href="Game.apk" download class="download-container" id="dl-link">
+            <button class="download-button" id="dl-btn">📥 DOWNLOAD / UPDATE APK</button>
+        </a>
+    </div>
+
+    <div style="position: relative; display: flex; justify-content: center; width: 100%; align-items: center;">
+        
+        <!-- ANA AYARLAR MENÜSÜ -->
+        <div id="settingsMenu" class="modal-menu">
+            <div class="menu-title" id="lbl-settings">SETTINGS / AYARLAR</div>
+            
+            <!-- MÜZİK SESİ -->
+            <div class="volume-container">
+                <span id="lbl-music-volume">MUSIC / MÜZİK: 100%</span>
+                <input type="range" id="musicSlider" class="volume-slider" min="0" max="1" step="0.05" value="0.4">
+            </div>
+
+            <!-- EFEKT SESİ -->
+            <div class="volume-container">
+                <span id="lbl-sfx-volume">SFX / EFEKT: 100%</span>
+                <input type="range" id="sfxSlider" class="volume-slider" min="0" max="1" step="0.05" value="0.6">
+            </div>
+
+            <button class="menu-btn" id="lbl-lang-btn" onclick="openLangMenu()">🌐 LANGUAGE / DİL</button>
+            <button class="menu-btn" id="lbl-about-btn" onclick="openAboutMenu()">ℹ️ ABOUT / HAKKINDA</button>
+            <button class="close-btn" onclick="closeMenus()" id="lbl-close">CLOSE</button>
+        </div>
+
+        <!-- DİL MENÜSÜ -->
+        <div id="langMenu" class="modal-menu">
+            <div class="menu-title" id="lbl-lang-title">SELECT LANGUAGE</div>
+            <div class="lang-list">
+                <button class="menu-btn" onclick="changeLanguage('tr')">TÜRKÇE</button>
+                <button class="menu-btn" onclick="changeLanguage('en')">ENGLISH</button>
+                <button class="menu-btn" onclick="changeLanguage('de')">DEUTSCH</button>
+                <button class="menu-btn" onclick="changeLanguage('it')">ITALIANO</button>
+                <button class="menu-btn" onclick="changeLanguage('pt')">PORTUGUÊS</button>
+                <button class="menu-btn" onclick="changeLanguage('es')">ESPAÑOL</button>
+                <button class="menu-btn" onclick="changeLanguage('fr')">FRANÇAIS</button>
+                <button class="menu-btn" onclick="changeLanguage('ja')">日本語</button>
+                <button class="menu-btn" onclick="changeLanguage('ru')">РУССКИЙ</button>
+                <button class="menu-btn" onclick="changeLanguage('fa')">فارسی</button>
+                <button class="menu-btn" onclick="changeLanguage('zh')">中文</button>
+                <button class="menu-btn" onclick="changeLanguage('ar')">العربية</button>
+            </div>
+            <button class="close-btn" onclick="backToMainMenu()" id="lbl-back">BACK / GERİ</button>
+        </div>
+
+        <!-- HAKKINDA MENÜSÜ -->
+        <div id="aboutMenu" class="modal-menu">
+            <div class="menu-title">ABOUT / HAKKINDA</div>
+            <div class="about-text" id="aboutText">
+                <strong>GAME</strong><br>
+                Version / Sürüm: 5.0
+            </div>
+            <button class="close-btn" onclick="backToMainMenu()" id="lbl-about-back">BACK / GERİ</button>
+        </div>
+
+        <canvas id="gameCanvas" width="400" height="300"></canvas>
+    </div>
+    
+    <div id="controlWrapper">
+        <div class="move-group">
+            <button id="leftBtn" class="ctrl-btn">◀</button>
+            <button id="rightBtn" class="ctrl-btn">▶</button>
+        </div>
+        <button id="jumpBtn" class="ctrl-btn">▲</button>
+    </div>
+
+    <div class="action-group">
+        <button id="startBtn">START / RESET</button>
+        <button id="pauseBtn">PAUSE</button>
+    </div>
+
+    <script>
+        const dictionary = {
+            tr: { level: "SEVİYE", gold: "ALTIN", settings: "AYARLAR", close: "KAPAT", langBtn: "🌐 DİL SEÇİMİ", langTitle: "DİL SEÇİNİZ", back: "GERİ", download: "📥 APK İNDİR / GÜNCELLE", gameover: "OYUN BİTTİ", win: "TEBRİKLER! TÜM BÖLÜMLERİ GEÇTİN!", mVol: "MÜZİK SESİ", sVol: "EFEKT SESİ", aboutBtn: "ℹ️ HAKKINDA", pause: "DURDUR", resume: "DEVAM ET", rtl: false },
+            en: { level: "LEVEL", gold: "GOLD", settings: "SETTINGS", close: "CLOSE", langBtn: "🌐 LANGUAGE", langTitle: "SELECT LANGUAGE", back: "BACK", download: "📥 DOWNLOAD / UPDATE APK", gameover: "GAME OVER", win: "YOU WIN ALL LEVELS!", mVol: "MUSIC VOLUME", sVol: "SFX VOLUME", aboutBtn: "ℹ️ ABOUT", pause: "PAUSE", resume: "RESUME", rtl: false },
+            de: { level: "STUFE", gold: "GOLD", settings: "EINSTELLUNGEN", close: "SCHLIESSEN", langBtn: "🌐 SPRACHE", langTitle: "SPRACHE WÄHLEN", back: "ZURÜCK", download: "📥 APK HERUNTERLADEN / AKTUALISIEREN", gameover: "SPIEL VORBEI", win: "ALLE STUFEN GEWONNEN!", mVol: "MUSIKLAUTSTÄRKE", sVol: "EFFEKTLAUTSTÄRKE", aboutBtn: "ℹ️ ÜBER SPIEL", pause: "PAUSE", resume: "WEITER", rtl: false },
+            it: { level: "LIVELLO", gold: "ORO", settings: "IMPOSTAZIONI", close: "CHIUDI", langBtn: "🌐 LINGUA", langTitle: "SCEGLI LINGUA", back: "INDIETRO", download: "📥 SCARICA / AGGIORNA APK", gameover: "GAME OVER", win: "HAI VINTO TUTTI I LIVELLI!", mVol: "VOLUME MUSICA", sVol: "VOLUME EFFETTI", aboutBtn: "ℹ️ INFO", pause: "PAUSA", resume: "RIPRENDI", rtl: false },
+            pt: { level: "NÍVEL", gold: "OURO", settings: "OPÇÕES", close: "FECHAR", langBtn: "🌐 IDIOMA", langTitle: "SELECIONAR IDIOMA", back: "VOLTAR", download: "📥 BAIXAR / ATUALIZAR APK", gameover: "FIM DE JOGO", win: "VOCÊ VENCEU TODOS OS NÍVEIS!", mVol: "VOLUME DA MÚSICA", sVol: "VOLUME DOS EFEITOS", aboutBtn: "ℹ️ SOBRE", pause: "PAUSAR", resume: "CONTINUAR", rtl: false },
+            es: { level: "NIVEL", gold: "ORO", settings: "AJUSTES", close: "CERRAR", langBtn: "🌐 IDIOMA", langTitle: "SELECONAR IDIOMA", back: "ATRÁS", download: "📥 DESCARGAR / ACTUALIZAR APK", gameover: "JUEGO TERMINADO", win: "¡GANASTE TODOS LOS NIVELLES!", mVol: "VOLUMEN MÚSICA", sVol: "VOLUMEN EFECTOS", aboutBtn: "ℹ️ ACERCA DE", pause: "PAUSA", resume: "REANUDAR", rtl: false },
+            fr: { level: "NIVEAU", gold: "OR", settings: "RÉGLAGES", close: "FERMER", langBtn: "🌐 LANGUE", langTitle: "CHOISIR LA LANGUE", back: "RETOUR", download: "📥 TÉLÉCHARGER / METTRE À JOUR APK", gameover: "FIN DE JEU", win: "VOUS AVEZ GAGNÉ TOUS LES NIVEAUX!", mVol: "VOLUME MUSIQUE", sVol: "VOLUME EFFETS", aboutBtn: "ℹ️ À PROPOS", pause: "PAUSE", resume: "REPRENDRE", rtl: false },
+            ja: { level: "レベル", gold: "ゴールド", settings: "設定", close: "閉じる", langBtn: "🌐 言語選択", langTitle: "言語を選択してください", back: "戻る", download: "📥 APK ダウンロード / アップデート", gameover: "ゲームオーバー", win: "すべてのレベル teba をクリアしました！", mVol: "BGM音量", sVol: "SE音量", aboutBtn: "ℹ️ 情報", pause: "一時停止", resume: "再開", rtl: false },
+            ru: { level: "УРОВЕНЬ", gold: "ЗОЛОТО", settings: "НАСТРОЙКИ", close: "ЗАКРЫТЬ", langBtn: "🌐 ЯЗЫК", langTitle: "ВЫБЕРИТЕ ЯЗЫК", back: "НАЗАД", download: "📥 СКАЧАТЬ / ОБНОВИТЬ APK", gameover: "ИГРА ОКОНЧЕНА", win: "ВЫ ВЫИГРАЛИ ВСЕ УРОВНИ!", mVol: "ГРОМКОСТЬ БГМ", sVol: "ГРОМКОСТЬ ЗВУКОВ", aboutBtn: "ℹ️ О ПРОГРАММЕ", pause: "ПАУЗА", resume: "ПРОДОЛЖИТЬ", rtl: false },
+            fa: { level: "مرحله", gold: "طلا", settings: "تنظیمات", close: "بستن", langBtn: "🌐 انتخاب زبان", langTitle: "زبان را escape کنید", back: "بازگشت", download: "📥 دانلود / بروزرسانی برنامه", gameover: "بازی تمام شد", win: "شما برنده تمام مراحل شدید!", mVol: "حجم صدای موزیک", sVol: "حجم صدای جلوه ها", aboutBtn: "ℹ️ درباره بازی", pause: "توقف", resume: "ادامه", rtl: true },
+            zh: { level: "关卡", gold: "金币", settings: "设置", close: "关闭", langBtn: "🌐 语言", langTitle: "选择语言", back: "返回", download: "📥 下载 / 更新 APK", gameover: "游戏结束", win: "你赢了所有关卡！", mVol: "音乐音量", sVol: "音效音量", aboutBtn: "ℹ️ 关于", pause: "暂停", resume: "继续", rtl: false },
+            ar: { level: "المستوى", gold: "الذهب", settings: "الإعدادات", close: "إغلاق", langBtn: "🌐 اللغة", langTitle: "اختر اللغة", back: "عودة", download: "📥 تنزيل / تحديث APK", gameover: "لعبة انتهت", win: "لقد فزت بجميع المستويات!", mVol: "صوت الموسيقى", sVol: "صوت المؤثرات", aboutBtn: "ℹ️ حول", pause: "إيقاف", resume: "استئناف", rtl: true }
+        };
+
+        let currentLang = localStorage.getItem("altay_lang") || "en";
+        let musicVolume = parseFloat(localStorage.getItem("altay_music_vol") ?? "0.3");
+        let sfxVolume = parseFloat(localStorage.getItem("altay_sfx_vol") ?? "0.5");
+
+        function openMainMenu() { document.getElementById("settingsMenu").style.display = "flex"; document.getElementById("langMenu").style.display = "none"; document.getElementById("aboutMenu").style.display = "none"; }
+        function openLangMenu() { document.getElementById("settingsMenu").style.display = "none"; document.getElementById("langMenu").style.display = "flex"; }
+        function openAboutMenu() { document.getElementById("settingsMenu").style.display = "none"; document.getElementById("aboutMenu").style.display = "flex"; }
+        function backToMainMenu() { document.getElementById("langMenu").style.display = "none"; document.getElementById("aboutMenu").style.display = "none"; document.getElementById("settingsMenu").style.display = "flex"; }
+        function closeMenus() { document.getElementById("settingsMenu").style.display = "none"; document.getElementById("langMenu").style.display = "none"; document.getElementById("aboutMenu").style.display = "none"; }
+        function changeLanguage(lang) { currentLang = lang; localStorage.setItem("altay_lang", lang); applyLanguage(); backToMainMenu(); }
+        
+        const mSlider = document.getElementById("musicSlider");
+        const sSlider = document.getElementById("sfxSlider");
+        mSlider.value = musicVolume;
+        sSlider.value = sfxVolume;
+
+        mSlider.addEventListener("input", (e) => {
+            musicVolume = parseFloat(e.target.value);
+            localStorage.setItem("altay_music_vol", musicVolume);
+            if (musicGainNode) musicGainNode.gain.setValueAtTime(musicVolume * 0.15, audioCtx.currentTime);
+            updateVolumeLabels();
+        });
+
+        sSlider.addEventListener("input", (e) => {
+            sfxVolume = parseFloat(e.target.value);
+            localStorage.setItem("altay_sfx_vol", sfxVolume);
+            updateVolumeLabels();
+        });
+
+        function updateVolumeLabels() {
+            document.getElementById("lbl-music-volume").innerText = `${dictionary[currentLang].mVol}: ${Math.round(musicVolume * 100)}%`;
+            document.getElementById("lbl-sfx-volume").innerText = `${dictionary[currentLang].sVol}: ${Math.round(sfxVolume * 100)}%`;
+        }
+
+        function applyLanguage() {
+            const langData = dictionary[currentLang];
+            if(langData.rtl) {
+                document.getElementById("topWrapper").style.flexDirection = "column";
+                document.querySelector(".top-row").style.flexDirection = "row-reverse";
+                document.getElementById("uiPanel").style.direction = "rtl";
+            } else {
+                document.getElementById("topWrapper").style.flexDirection = "column";
+                document.querySelector(".top-row").style.flexDirection = "row";
+                document.getElementById("uiPanel").style.direction = "ltr";
+            }
+            document.getElementById("lbl-level").innerText = langData.level;
+            document.getElementById("lbl-gold").innerText = langData.gold;
+            document.getElementById("lbl-settings").innerText = langData.settings;
+            document.getElementById("lbl-close").innerText = langData.close;
+            document.getElementById("lbl-lang-btn").innerText = langData.langBtn;
+            document.getElementById("lbl-lang-title").innerText = langData.langTitle;
+            document.getElementById("lbl-back").innerText = langData.back;
+            document.getElementById("lbl-about-back").innerText = langData.back;
+            document.getElementById("dl-btn").innerText = langData.download;
+            document.getElementById("lbl-about-btn").innerText = langData.aboutBtn;
+            
+            const pBtn = document.getElementById("pauseBtn");
+            if(gameState === "paused") pBtn.innerText = langData.resume;
+            else pBtn.innerText = langData.pause;
+
+            updateVolumeLabels();
+        }
+
+        let audioCtx = null;
+        let musicGainNode = null;
+        let nextMusicNoteTime = 0;
+        let musicStep = 0;
+        const melody = [261.63, 293.66, 329.63, 392.00, 329.63, 293.66, 261.63, 349.23];
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                musicGainNode = audioCtx.createGain();
+                musicGainNode.gain.setValueAtTime(musicVolume * 0.15, audioCtx.currentTime);
+                musicGainNode.connect(audioCtx.destination);
+                nextMusicNoteTime = audioCtx.currentTime;
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function tickBackgroundMusic() {
+            if (!audioCtx || gameState !== "play" || musicVolume === 0 || document.hidden) return;
+
+            const now = audioCtx.currentTime;
+            while (nextMusicNoteTime < now + 0.1) {
+                const osc = audioCtx.createOscillator();
+                const noteGain = audioCtx.createGain();
+                
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(melody[musicStep % melody.length], nextMusicNoteTime);
+                
+                noteGain.gain.setValueAtTime(0.4, nextMusicNoteTime);
+                noteGain.gain.exponentialRampToValueAtTime(0.001, nextMusicNoteTime + 0.35);
+                
+                osc.connect(noteGain);
+                noteGain.connect(musicGainNode);
+                
+                osc.start(nextMusicNoteTime);
+                osc.stop(nextMusicNoteTime + 0.4);
+                
+                nextMusicNoteTime += 0.4;
+                musicStep++;
+            }
+        }
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+                if (audioCtx && audioCtx.state === 'running') {
+                    audioCtx.suspend();
+                }
+            } else {
+                if (audioCtx && gameState === "play") {
+                    audioCtx.resume();
+                    nextMusicNoteTime = audioCtx.currentTime;
+                }
+            }
+        });
+
+        function playOriginalFinishSound() {
+            initAudio(); if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+            const victoryNotes = [
+                { f: 523.25, d: 0.10 }, { f: 659.25, d: 0.10 }, { f: 783.99, d: 0.10 },
+                { f: 1046.50, d: 0.15 }, { f: 783.99, d: 0.10 }, { f: 1046.50, d: 0.40 }
+            ];
+            let currentDelay = 0;
+            victoryNotes.forEach((note) => {
+                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                osc.type = 'square'; osc.frequency.setValueAtTime(note.f, now + currentDelay);
+                gain.gain.setValueAtTime(0.04 * sfxVolume, now + currentDelay);
+                gain.gain.linearRampToValueAtTime(0.0001, now + currentDelay + note.d);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(now + currentDelay); osc.stop(now + currentDelay + note.d);
+                currentDelay += note.d + 0.02;
+            });
+        }
+
+        function playCheckpointSound() {
+            initAudio(); if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = 'triangle'; osc.frequency.setValueAtTime(330, now); osc.frequency.setValueAtTime(660, now + 0.08);
+            gain.gain.setValueAtTime(0.12 * sfxVolume, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(now); osc.stop(now + 0.25);
+        }
+
+        function playSound(type) {
+            initAudio(); if (!audioCtx) return;
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+
+            if (type === 'jump') {
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(160, now); osc.frequency.exponentialRampToValueAtTime(380, now + 0.15);
+                gain.gain.setValueAtTime(0.35 * sfxVolume, now); gain.gain.linearRampToValueAtTime(0.001, now + 0.15);
+                osc.start(now); osc.stop(now + 0.15);
+            } else if (type === 'coin') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(620, now); osc.frequency.setValueAtTime(930, now + 0.08);
+                gain.gain.setValueAtTime(0.30 * sfxVolume, now); gain.gain.linearRampToValueAtTime(0.001, now + 0.25);
+                osc.start(now); osc.stop(now + 0.25);
+            } else if (type === 'die') {
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(280, now); osc.frequency.linearRampToValueAtTime(50, now + 0.3);
+                gain.gain.setValueAtTime(0.05 * sfxVolume, now); gain.gain.linearRampToValueAtTime(0.001, now + 0.3);
+                osc.start(now); osc.stop(now + 0.3);
+            }
+        }
+
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        let level = 1, score = 0, player = {x:50, y:150, vx:0, vy:0, w:20, h:24}, keys={l:false, r:false}, gameState = "play";
+        let cameraX = 0, mapWidth = 2400, lastTime = performance.now(), isGrounded = false;
+
+        let levels = [
+            { 
+                width: 2400, 
+                plats: [
+                    {x:0, y:270, w:250, h:30}, 
+                    {x:350, y:220, w:200, h:30}, 
+                    {x:650, y:180, w:200, h:30}, 
+                    {x:950, y:230, w:250, h:30}, 
+                    {x:1600, y:200, w:200, h:30}, 
+                    {x:1900, y:240, w:200, h:30}, 
+                    {x:2200, y:270, w:200, h:30},
+                    {x:400, y:150, w:100, h:20},
+                    {x:1650, y:135, w:100, h:20}
+                ],
+                movingPlat: {x: 1280, y: 210, w: 120, h: 20, startX: 1250, endX: 1500, dir: 1.5},
+                enemies: [
+                    {x:50, y:255, dir:1.0, start:10, end:230, type:"normal"}, 
+                    {x:700, y:165, dir:1.2, start:660, end:830, type:"normal"}, 
+                    {x:1700, y:185, dir:1.2, start:1610, end:1780, type:"normal"}, 
+                    {x:1950, y:225, dir:1.4, start:1910, end:2080, type:"normal"}
+                ], 
+                coins: [
+                    {x:100, y:240}, {x:130, y:240}, {x:160, y:240},
+                    {x:450, y:180}, {x:480, y:180}, {x:510, y:180},
+                    {x:750, y:140}, {x:780, y:140}, {x:810, y:140},
+                    {x:1050, y:190}, {x:1080, y:190}, {x:1110, y:190},
+                    {x:1340, y:160}, {x:1370, y:160}, {x:1400, y:160},
+                    {x:1700, y:160}, {x:1730, y:160}, {x:1760, y:160},
+                    {x:2000, y:200}, {x:2030, y:200}, {x:2060, y:200},
+                    {x:2250, y:230}, {x:2280, y:230}, {x:2310, y:230},
+                    {x:410, y:120}, {x:440, y:120}, {x:470, y:120},
+                    {x:1660, y:105}, {x:1690, y:105}, {x:1720, y:105}
+                ], 
+                checkpoints: [{x:1050, y:230, active:false}], 
+                finish: {x:2350, y:230, w:30, h:40}
+            },
+            { 
+                width: 2400, 
+                plats: [
+                    {x:0, y:270, w:200, h:30}, 
+                    {x:300, y:210, w:180, h:30}, 
+                    {x:580, y:170, w:220, h:30}, 
+                    {x:900, y:220, w:200, h:30}, 
+                    {x:1550, y:190, w:250, h:30}, 
+                    {x:1900, y:230, w:180, h:30}, 
+                    {x:2150, y:270, w:250, h:30},
+                    {x:640, y:115, w:100, h:20},
+                    {x:1940, y:160, w:100, h:20}
+                ],
+                movingPlat: {x: 1200, y: 190, w: 110, h: 20, startX: 1150, endX: 1450, dir: 1.8},
+                enemies: [
+                    {x:40, y:255, dir:1.2, start:10, end:180, type:"normal"}, 
+                    {x:320, y:195, dir:1.0, start:310, end:460, type:"normal"}, 
+                    {x:620, y:155, dir:1.4, start:590, end:780, type:"normal"}, 
+                    {x:1650, y:175, dir:1.4, start:1560, end:1780, type:"normal"}, 
+                    {x:2200, y:255, dir:1.5, start:2160, end:2380, type:"normal"},
+                    {x:1580, y:175, dir:1.5, start:1560, end:1720, type:"fast"}
+                ], 
+                coins: [
+                    {x:90, y:240}, {x:120, y:240}, {x:150, y:240},
+                    {x:380, y:170}, {x:410, y:170}, {x:440, y:170},
+                    {x:680, y:130}, {x:710, y:130}, {x:740, y:130},
+                    {x:1000, y:180}, {x:1030, y:180}, {x:1060, y:180},
+                    {x:1250, y:140}, {x:1280, y:140}, {x:1310, y:140},
+                    {x:1680, y:150}, {x:1710, y:150}, {x:1740, y:150},
+                    {x:1980, y:190}, {x:2040, y:190},
+                    {x:660, y:85}, {x:690, y:85}, {x:720, y:85},
+                    {x:1950, y:130}, {x:1980, y:130}, {x:2010, y:130}
+                ], 
+                checkpoints: [{x:1000, y:220, active:false}], 
+                finish: {x:2350, y:230, w:30, h:40}
+            },
+            { 
+                width: 2400, 
+                plats: [
+                    {x:0, y:270, w:220, h:30}, 
+                    {x:320, y:200, w:150, h:30}, 
+                    {x:550, y:230, w:200, h:30}, 
+                    {x:850, y:180, w:180, h:30}, 
+                    {x:1500, y:220, w:200, h:30}, 
+                    {x:1800, y:170, w:220, h:30}, 
+                    {x:2100, y:270, w:300, h:30},
+                    {x:600, y:160, w:100, h:20},
+                    {x:1850, y:115, w:100, h:20}
+                ],
+                movingPlat: {x: 1150, y: 200, w: 100, h: 20, startX: 1080, endX: 1400, dir: 2.0},
+                enemies: [
+                    {x:30, y:255, dir:1.3, start:10, end:200, type:"normal"}, 
+                    {x:570, y:215, dir:1.2, start:560, end:730, type:"normal"}, 
+                    {x:1520, y:205, dir:1.4, start:1510, end:1680, type:"normal"}, 
+                    {x:1900, y:155, dir:1.5, start:1820, end:2000, type:"normal"},
+                    {x:2150, y:255, dir:1.6, start:2110, end:2350, type:"fast"}
+                ], 
+                coins: [
+                    {x:110, y:240}, {x:140, y:240}, {x:170, y:240},
+                    {x:380, y:160}, {x:410, y:160}, {x:440, y:160},
+                    {x:650, y:190}, {x:680, y:190}, {x:710, y:190},
+                    {x:930, y:140}, {x:960, y:140}, {x:990, y:140},
+                    {x:1200, y:150}, {x:1230, y:150}, {x:1260, y:150},
+                    {x:1600, y:180}, {x:1630, y:180}, {x:1660, y:180},
+                    {x:1900, y:130}, {x:1930, y:130}, {x:1960, y:130},
+                    {x:610, y:130}, {x:640, y:130}, {x:670, y:130},
+                    {x:1860, y:85}, {x:1890, y:85}, {x:1920, y:85}
+                ], 
+                checkpoints: [{x:950, y:180, active:false}], 
+                finish: {x:2350, y:230, w:30, h:40}
+            },
+            { 
+                width: 2400, 
+                plats: [
+                    {x:0, y:270, w:250, h:30}, 
+                    {x:380, y:220, w:180, h:30}, 
+                    {x:680, y:170, w:180, h:30}, 
+                    {x:960, y:230, w:200, h:30}, 
+                    {x:1620, y:200, w:180, h:30}, 
+                    {x:1900, y:240, w:180, h:30}, 
+                    {x:2180, y:270, w:220, h:30},
+                    {x:420, y:155, w:100, h:20},
+                    {x:1660, y:140, w:100, h:20}
+                ],
+                movingPlat: {x: 1250, y: 180, w: 110, h: 20, startX: 1200, endX: 1550, dir: 2.2},
+                enemies: [
+                    {x:40, y:255, dir:1.4, start:10, end:230, type:"normal"}, 
+                    {x:400, y:205, dir:1.3, start:390, end:540, type:"normal"}, 
+                    {x:750, y:155, dir:1.8, start:690, end:840, type:"normal"}, 
+                    {x:1640, y:185, dir:1.5, start:1630, end:1780, type:"normal"}, 
+                    {x:1920, y:225, dir:1.4, start:1910, end:2060, type:"normal"},
+                    {x:50, y:255, dir:1.7, start:30, end:220, type:"fast"}
+                ], 
+                coins: [
+                    {x:100, y:240}, {x:130, y:240}, {x:160, y:240},
+                    {x:470, y:180}, {x:500, y:180}, {x:530, y:180},
+                    {x:770, y:130}, {x:800, y:130}, {x:830, y:130},
+                    {x:1060, y:190}, {x:1090, y:190}, {x:1120, y:190},
+                    {x:1300, y:130}, {x:1330, y:130}, {x:1360, y:130},
+                    {x:430, y:125}, {x:460, y:125}, {x:490, y:125},
+                    {x:1670, y:110}, {x:1700, y:110}, {x:1730, y:110}
+                ], 
+                checkpoints: [{x:1060, y:230, active:false}], 
+                finish: {x:2350, y:230, w:30, h:40}
+            },
+            { 
+                width: 2400, 
+                plats: [
+                    {x:0, y:270, w:180, h:30}, 
+                    {x:280, y:210, w:180, h:30}, 
+                    {x:550, y:170, w:180, h:30}, 
+                    {x:820, y:230, w:200, h:30}, 
+                    {x:1500, y:190, w:220, h:30}, 
+                    {x:1820, y:240, w:180, h:30}, 
+                    {x:2100, y:270, w:300, h:30},
+                    {x:320, y:150, w:100, h:20},
+                    {x:1540, y:135, w:100, h:20}
+                ],
+                movingPlat: {x: 1150, y: 210, w: 100, h: 20, startX: 1080, endX: 1420, dir: 2.4},
+                enemies: [
+                    {x:30, y:255, dir:1.5, start:10, end:160, type:"normal"}, 
+                    {x:350, y:195, dir:1.5, start:290, end:440, type:"normal"}, 
+                    {x:570, y:155, dir:1.6, start:560, end:710, type:"normal"}, 
+                    {x:1600, y:175, dir:1.7, start:1510, end:1700, type:"normal"},
+                    {x:2150, y:255, dir:1.8, start:2120, end:2360, type:"fast"}
+                ], 
+                coins: [
+                    {x:80, y:240}, {x:110, y:240}, {x:140, y:240},
+                    {x:370, y:170}, {x:400, y:170}, {x:430, y:170},
+                    {x:640, y:130}, {x:670, y:130}, {x:700, y:130},
+                    {x:920, y:190}, {x:950, y:190}, {x:980, y:190},
+                    {x:330, y:120}, {x:360, y:120}, {x:390, y:120},
+                    {x:1550, y:100}, {x:1580, y:100}, {x:1610, y:100}
+                ], 
+                checkpoints: [{x:920, y:230, active:false}], 
+                finish: {x:2350, y:230, w:30, h:40}
+            },
+            { 
+                width: 2400, 
+                plats: [
+                    {x:0, y:270, w:220, h:30}, 
+                    {x:320, y:200, w:200, h:30}, 
+                    {x:620, y:240, w:160, h:30}, 
+                    {x:880, y:180, w:200, h:30}, 
+                    {x:1550, y:220, w:200, h:30}, 
+                    {x:1850, y:170, w:200, h:30}, 
+                    {x:2150, y:270, w:250, h:30},
+                    {x:360, y:140, w:100, h:20},
+                    {x:1890, y:115, w:100, h:20}
+                ],
+                movingPlat: {x: 1180, y: 190, w: 120, h: 20, startX: 1120, endX: 1480, dir: 2.5},
+                enemies: [
+                    {x:50, y:255, dir:1.6, start:10, end:200, type:"normal"}, 
+                    {x:340, y:185, dir:1.7, start:330, end:500, type:"normal"}, 
+                    {x:640, y:225, dir:1.5, start:630, end:760, type:"normal"}, 
+                    {x:1870, y:155, dir:1.8, start:1860, end:2030, type:"normal"},
+                    {x:1580, y:205, dir:1.9, start:1560, end:1720, type:"fast"}
+                ], 
+                coins: [
+                    {x:110, y:240}, {x:140, y:240}, {x:170, y:240},
+                    {x:420, y:160}, {x:450, y:160}, {x:480, y:160},
+                    {x:700, y:200}, {x:730, y:200}, {x:760, y:200},
+                    {x:980, y:140}, {x:1010, y:140}, {x:1040, y:140},
+                    {x:370, y:110}, {x:400, y:110}, {x:430, y:110},
+                    {x:1900, y:85}, {x:1930, y:85}, {x:1960, y:85}
+                ], 
+                checkpoints: [{x:980, y:180, active:false}], 
+                finish: {x:2350, y:230, w:30, h:40}
+            },
+            { 
+                width: 2400, 
+                plats: [
+                    {x:0, y:270, w:200, h:30}, 
+                    {x:300, y:220, w:180, h:30}, 
+                    {x:560, y:170, w:180, h:30}, 
+                    {x:820, y:230, w:180, h:30}, 
+                    {x:1450, y:190, w:220, h:30}, 
+                    {x:1750, y:240, w:180, h:30}, 
+                    {x:2050, y:270, w:350, h:30},
+                    {x:340, y:155, w:100, h:20},
+                    {x:1490, y:135, w:100, h:20}
+                ],
+                movingPlat: {x: 1100, y: 200, w: 100, h: 20, startX: 1040, endX: 1380, dir: 2.6},
+                enemies: [
+                    {x:40, y:255, dir:1.8, start:10, end:180, type:"normal"}, 
+                    {x:320, y:205, dir:1.5, start:310, end:460, type:"normal"}, 
+                    {x:620, y:155, dir:2.2, start:570, end:720, type:"normal"}, 
+                    {x:1550, y:175, dir:2.0, start:1460, end:1650, type:"normal"},
+                    {x:2100, y:255, dir:2.0, start:2060, end:2360, type:"fast"}
+                ], 
+                coins: [
+                    {x:90, y:240}, {x:120, y:240}, {x:150, y:240},
+                    {x:390, y:180}, {x:420, y:180}, {x:450, y:180},
+                    {x:650, y:130}, {x:680, y:130}, {x:710, y:130},
+                    {x:910, y:190}, {x:940, y:190}, {x:970, y:190},
+                    {x:350, y:125}, {x:380, y:125}, {x:410, y:125},
+                    {x:1500, y:105}, {x:1530, y:105}, {x:1560, y:105}
+                ], 
+                checkpoints: [{x:910, y:230, active:false}], 
+                finish: {x:2350, y:230, w:30, h:40}
+            },
+            { 
+                width: 2400, 
+                plats: [
+                    {x:0, y:270, w:250, h:30}, 
+                    {x:360, y:210, w:160, h:30}, 
+                    {x:600, y:170, w:200, h:30}, 
+                    {x:900, y:230, w:160, h:30}, 
+                    {x:1500, y:200, w:200, h:30}, 
+                    {x:1800, y:240, w:160, h:30}, 
+                    {x:2100, y:270, w:300, h:30},
+                    {x:400, y:150, w:100, h:20},
+                    {x:1540, y:140, w:100, h:20}
+                ],
+                movingPlat: {x: 1160, y: 210, w: 110, h: 20, startX: 1100, endX: 1440, dir: 2.8},
+                enemies: [
+                    {x:50, y:255, dir:2.0, start:10, end:230, type:"normal"}, 
+                    {x:380, y:195, dir:1.8, start:370, end:500, type:"normal"}, 
+                    {x:680, y:155, dir:2.4, start:610, end:780, type:"normal"}, 
+                    {x:1520, y:185, dir:2.2, start:1510, end:1680, type:"normal"}, 
+                    {x:1820, y:225, dir:2.0, start:1810, end:1940, type:"normal"},
+                    {x:60, y:255, dir:2.1, start:20, end:220, type:"fast"}
+                ], 
+                coins: [
+                    {x:120, y:240}, {x:150, y:240}, {x:180, y:240},
+                    {x:440, y:170}, {x:470, y:170}, {x:500, y:170},
+                    {x:700, y:130}, {x:730, y:130}, {x:760, y:130},
+                    {x:980, y:190}, {x:1010, y:190}, {x:1040, y:190},
+                    {x:410, y:120}, {x:440, y:120}, {x:470, y:120},
+                    {x:1550, y:110}, {x:1580, y:110}, {x:1610, y:110}
+                ], 
+                checkpoints: [{x:980, y:230, active:false}], 
+                finish: {x:2350, y:230, w:30, h:40}
+            },
+            { 
+                width: 2400, 
+                plats: [
+                    {x:0, y:270, w:180, h:30}, 
+                    {x:280, y:200, w:180, h:30}, 
+                    {x:540, y:240, w:180, h:30}, 
+                    {x:800, y:180, w:180, h:30}, 
+                    {x:1450, y:220, w:200, h:30}, 
+                    {x:1750, y:170, w:200, h:30}, 
+                    {x:2050, y:270, w:350, h:30},
+                    {x:320, y:140, w:100, h:20},
+                    {x:1500, y:160, w:100, h:20}
+                ],
+                movingPlat: {x: 1100, y: 190, w: 100, h: 20, startX: 1020, endX: 1380, dir: 3.0},
+                enemies: [
+                    {x:30, y:255, dir:2.2, start:10, end:160, type:"normal"}, 
+                    {x:350, y:185, dir:2.5, start:290, end:440, type:"normal"}, 
+                    {x:560, y:225, dir:2.0, start:550, end:700, type:"normal"}, 
+                    {x:1550, y:205, dir:2.2, start:1460, end:1630, type:"normal"},
+                    {x:1480, y:205, dir:2.2, start:1460, end:1620, type:"fast"}
+                ], 
+                coins: [
+                    {x:80, y:240}, {x:110, y:240}, {x:140, y:240},
+                    {x:370, y:160}, {x:400, y:160}, {x:430, y:160},
+                    {x:630, y:200}, {x:660, y:200}, {x:690, y:200},
+                    {x:890, y:140}, {x:920, y:140}, {x:950, y:140},
+                    {x:330, y:110}, {x:360, y:110}, {x:390, y:110},
+                    {x:1510, y:130}, {x:1540, y:130}, {x:1570, y:130}
+                ], 
+                checkpoints: [{x:890, y:180, active:false}], 
+                finish: {x:2350, y:230, w:30, h:40}
+            },
+            { 
+                width: 2400, 
+                plats: [
+                    {x:0, y:270, w:200, h:30}, 
+                    {x:320, y:210, w:160, h:30}, 
+                    {x:580, y:170, w:160, h:30}, 
+                    {x:840, y:230, w:160, h:30}, 
+                    {x:1500, y:190, w:200, h:30}, 
+                    {x:1800, y:240, w:160, h:30}, 
+                    {x:2100, y:270, w:300, h:30},
+                    {x:360, y:150, w:100, h:20},
+                    {x:1540, y:130, w:100, h:20}
+                ],
+                movingPlat: {x: 1120, y: 200, w: 90, h: 20, startX: 1040, endX: 1420, dir: 3.2},
+                enemies: [
+                    {x:40, y:255, dir:2.5, start:10, end:180, type:"normal"}, 
+                    {x:340, y:195, dir:2.2, start:330, end:460, type:"normal"}, 
+                    {x:640, y:155, dir:2.8, start:590, end:720, type:"normal"}, 
+                    {x:1580, y:175, dir:2.6, start:1510, end:1680, type:"normal"},
+                    {x:2150, y:255, dir:2.3, start:2120, end:2360, type:"fast"}
+                ], 
+                coins: [
+                    {x:100, y:240}, {x:130, y:240}, {x:160, y:240},
+                    {x:400, y:170}, {x:430, y:170}, {x:460, y:170},
+                    {x:660, y:130}, {x:690, y:130}, {x:720, y:130},
+                    {x:920, y:190}, {x:950, y:190}, {x:980, y:190},
+                    {x:370, y:120}, {x:400, y:120}, {x:430, y:120},
+                    {x:1550, y:100}, {x:1580, y:100}, {x:1610, y:100}
+                ], 
+                checkpoints: [{x:920, y:230, active:false}], 
+                finish: {x:2350, y:230, w:30, h:40}
+            }
+        ];
+
+        function loadLevel(fromDeath = false) {
+            let current = levels[level-1];
+            if (fromDeath) {
+                let activeCp = current.checkpoints.find(cp => cp.active);
+                if (activeCp) {
+                    player.x = activeCp.x;
+                    player.y = activeCp.y - player.h;
+                } else {
+                    player.x = 50;
+                    player.y = 150;
+                }
+            } else {
+                current.checkpoints.forEach(cp => cp.active = false);
+                player.x = 50;
+                player.y = 150;
+            }
+
+            player.vx = 0; player.vy = 0; cameraX = 0; gameState = "play";
+            mapWidth = current.width;
+            isGrounded = false;
+            if(audioCtx && !document.hidden) nextMusicNoteTime = audioCtx.currentTime;
+        }
+
+        document.getElementById("startBtn").onclick = () => { initAudio(); location.reload(); };
+        
+        const pBtn = document.getElementById("pauseBtn");
+        pBtn.onclick = () => {
+            initAudio();
+            if(gameState === "play") {
+                gameState = "paused";
+                pBtn.innerText = dictionary[currentLang].resume;
+                if(audioCtx) audioCtx.suspend();
+            } else if(gameState === "paused") {
+                gameState = "play";
+                pBtn.innerText = dictionary[currentLang].pause;
+                lastTime = performance.now();
+                if(audioCtx && !document.hidden) {
+                    audioCtx.resume();
+                    nextMusicNoteTime = audioCtx.currentTime;
+                }
+            }
+        };
+
+        const lBtn = document.getElementById("leftBtn");
+        const rBtn = document.getElementById("rightBtn");
+        const jBtn = document.getElementById("jumpBtn");
+
+        lBtn.addEventListener("touchstart", (e) => { e.preventDefault(); initAudio(); if(gameState === "play") keys.l = true; });
+        lBtn.addEventListener("touchend", (e) => { e.preventDefault(); keys.l = false; });
+        rBtn.addEventListener("touchstart", (e) => { e.preventDefault(); initAudio(); if(gameState === "play") keys.r = true; });
+        rBtn.addEventListener("touchend", (e) => { e.preventDefault(); keys.r = false; });
+        jBtn.addEventListener("touchstart", (e) => { 
+            e.preventDefault(); initAudio();
+            if(isGrounded && gameState === "play") { player.vy = -7.6; isGrounded = false; playSound('jump'); } 
+        });
+
+        lBtn.addEventListener("mousedown", () => { initAudio(); if(gameState === "play") keys.l = true; });
+        lBtn.addEventListener("mouseup", () => keys.l = false);
+        rBtn.addEventListener("mousedown", () => { initAudio(); if(gameState === "play") keys.r = true; });
+        rBtn.addEventListener("mouseup", () => keys.r = false);
+
+        window.addEventListener("keydown", (e) => {
+            initAudio();
+            if(gameState !== "play") return;
+            if(e.key === "ArrowLeft" || e.key === "a") keys.l = true;
+            if(e.key === "ArrowRight" || e.key === "d") keys.r = true;
+            if((e.key === "ArrowUp" || e.key === "w" || e.key === " ") && isGrounded) {
+                player.vy = -7.6; isGrounded = false; playSound('jump');
+            }
+        });
+        window.addEventListener("keyup", (e) => {
+            if(e.key === "ArrowLeft" || e.key === "a") keys.l = false;
+            if(e.key === "ArrowRight" || e.key === "d") keys.r = false;
+        });
+
+        function update(timestamp) {
+            let deltaTime = 1;
+            if (timestamp) {
+                deltaTime = (timestamp - lastTime) / 16.67;
+                lastTime = timestamp;
+            }
+
+            if(gameState === "play") {
+                tickBackgroundMusic();
+
+                if(keys.l) player.vx = -3.5 * deltaTime; else if(keys.r) player.vx = 3.5 * deltaTime; else player.vx *= Math.pow(0.82, deltaTime);
+                player.vy += 0.35 * deltaTime; 
+                
+                player.x += player.vx;
+                if(player.x < 0) player.x = 0;
+                
+                let current = levels[level-1];
+                
+                let mp = current.movingPlat;
+                let oldMpX = mp.x;
+                mp.x += mp.dir * deltaTime;
+                if(mp.x > mp.endX || mp.x < mp.startX) mp.dir *= -1;
+                let mpSpeedX = mp.x - oldMpX; 
+
+                current.plats.forEach(p => {
+                    if(player.x + player.w > p.x && player.x < p.x + p.w && player.y + player.h > p.y + 2 && player.y < p.y + p.h) {
+                        if(player.vx > 0 && player.x + player.w - player.vx <= p.x + 2) player.x = p.x - player.w;
+                        if(player.vx < 0 && player.x - player.vx >= p.x + p.w - 2) player.x = p.x + p.w;
+                    }
+                });
+
+                if(player.x + player.w > mp.x && player.x < mp.x + mp.w && player.y + player.h > mp.y + 2 && player.y < mp.y + mp.h) {
+                    if(player.vx > 0 && player.x + player.w - player.vx <= mp.x + 2) player.x = mp.x - player.w;
+                    if(player.vx < 0 && player.x - player.vx >= mp.x + mp.w - 2) player.x = mp.x + mp.w;
+                }
+
+                player.y += player.vy;
+                let onPlatform = false;
+
+                current.plats.forEach(p => { 
+                    if(player.x + player.w - 2 > p.x && player.x + 2 < p.x + p.w) {
+                        if(player.y + player.h >= p.y && player.y + player.h <= p.y + player.vy + 4 && player.vy >= 0) { 
+                            player.vy = 0; player.y = p.y - player.h; onPlatform = true;
+                        }
+                    }
+                });
+
+                if(player.x + player.w - 2 > mp.x && player.x + 2 < mp.x + mp.w) {
+                    if(player.y + player.h >= mp.y && player.y + player.h <= mp.y + player.vy + 4 && player.vy >= 0) {
+                        player.vy = 0;
+                        player.y = mp.y - player.h;
+                        player.x += mpSpeedX; 
+                        onPlatform = true;
+                    }
+                }
+                
+                isGrounded = onPlatform;
+
+                cameraX = player.x - 100;
+                if(cameraX < 0) cameraX = 0;
+                if(cameraX > mapWidth - 400) cameraX = mapWidth - 400;
+
+                current.enemies.forEach(e => { 
+                    let speedMultiplier = e.type === "fast" ? (1 + (level * 0.04)) : 1.0;
+                    e.x += e.dir * speedMultiplier * deltaTime; 
+                    if(e.x > e.end || e.x < e.start) e.dir *= -1; 
+                    if(player.x + player.w > e.x + 2 && player.x < e.x + 13 && player.y + player.h > e.y + 2 && player.y < e.y + 13) { 
+                        playSound('die'); loadLevel(true); 
+                    }
+                });
+
+                current.coins.forEach((c, index) => {
+                    if(Math.abs(player.x - c.x) < 18 && Math.abs(player.y - c.y) < 22) { current.coins.splice(index, 1); score++; document.getElementById("score").innerText = score; playSound('coin'); }
+                });
+
+                current.checkpoints.forEach(cp => {
+                    if (!cp.active && player.x + player.w >= cp.x && player.x <= cp.x + 15 && player.y + player.h >= cp.y - 30 && player.y <= cp.y) {
+                        cp.active = true; playCheckpointSound();
+                    }
+                });
+
+                let f = current.finish;
+                if(player.x < f.x + f.w && player.x + player.w > f.x && player.y < f.y + f.h && player.y + player.h > f.y) {
+                    playOriginalFinishSound();
+                    if(level < levels.length) { level++; loadLevel(false); } else { gameState = "win"; }
+                }
+                
+                if(player.y > 285) { playSound('die'); loadLevel(true); }
+            }
+            draw(); requestAnimationFrame(update);
+        }
+
+        function draw() {
+            ctx.clearRect(0,0,400,300);
+            ctx.save(); ctx.translate(-cameraX, 0);
+            let current = levels[level-1];
+            
+            ctx.fillStyle = "#A0522D"; 
+            current.plats.forEach(p => {
+                ctx.beginPath();
+                ctx.moveTo(p.x + 8, p.y + p.h);      
+                ctx.lineTo(p.x + p.w - 8, p.y + p.h); 
+                ctx.lineTo(p.x + p.w / 2, p.y + 160); 
+                ctx.closePath();
+                ctx.fill();
+            });
+
+            ctx.fillStyle = "#8B5A2B"; 
+            current.plats.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
+
+            ctx.fillStyle = "#34495e";
+            let mp = current.movingPlat;
+            ctx.fillRect(mp.x, mp.y, mp.w, mp.h);
+
+            current.enemies.forEach(e => {
+                ctx.fillStyle = e.type === "fast" ? "#9b59b6" : "red"; 
+                ctx.fillRect(e.x, e.y, 15, 15);
+            });
+            
+            ctx.fillStyle = "gold"; current.coins.forEach(c => ctx.fillRect(c.x, c.y, 10, 10));
+            
+            current.checkpoints.forEach(cp => {
+                ctx.fillStyle = "#ffffff"; ctx.fillRect(cp.x, cp.y - 30, 3, 30);
+                ctx.fillStyle = cp.active ? "#4cd137" : "#ffcc00";
+                ctx.beginPath(); ctx.moveTo(cp.x + 3, cp.y - 30); ctx.lineTo(cp.x + 18, cp.y - 22); ctx.lineTo(cp.x + 3, cp.y - 14); ctx.fill();
+            });
+
+            ctx.fillStyle = "yellow"; ctx.fillRect(current.finish.x, current.finish.y, current.finish.w, current.finish.h);
+            ctx.fillStyle = "blue"; ctx.fillRect(player.x, player.y, player.w, player.h);
+            ctx.restore();
+            
+            ctx.fillStyle = "white"; ctx.font = "bold 18px 'Courier New'"; ctx.textAlign = "center";
+            if(gameState === "over") ctx.fillText(dictionary[currentLang].gameover, 200, 150);
+            if(gameState === "win") ctx.fillText(dictionary[currentLang].win, 200, 150);
+            if(gameState === "paused") {
+                ctx.fillStyle = "rgba(0,0,0,0.4)"; ctx.fillRect(0,0,400,300);
+                ctx.fillStyle = "white"; ctx.font = "bold 24px 'Courier New'"; ctx.fillText("PAUSED", 200, 150);
+            }
+            document.getElementById("level").innerText = level;
+        }
+
+        loadLevel(false);
+        applyLanguage();
+        requestAnimationFrame(update);
+    </script>
+</body>
+</html>
