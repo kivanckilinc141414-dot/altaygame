@@ -51,7 +51,8 @@
         
         #jumpBtn { background: #ffcc00; width: 75px; height: 75px; font-size: 28px; }
         
-        .action-group { display: flex; width: 95%; max-width: 500px; gap: 10px; margin-top: 5px; z-index: 10; }
+        /* GÜNCELLENDİ: Start ve Pause tuşlarının konumu aşağıya taşındı */
+        .action-group { display: flex; width: 95%; max-width: 500px; gap: 10px; margin-top: 30px; margin-bottom: 20px; z-index: 10; }
         #startBtn { flex: 2; height: 38px; background: #4cd137; font-size: 14px; box-shadow: 0px 4px 0px #000; }
         #startBtn:active { transform: translateY(4px); box-shadow: 0px 0px 0px #000; }
         #pauseBtn { flex: 1; height: 38px; background: #ea2027; font-size: 14px; box-shadow: 0px 4px 0px #000; }
@@ -69,7 +70,8 @@
             #topWrapper { max-width: 420px; margin-bottom: 2px; }
             #gameCanvas { height: 62vh; width: auto; aspect-ratio: 4/3; max-width: none; }
             
-            .action-group { position: fixed; top: 10px; right: 10px; width: 180px; margin-top: 0; }
+            /* Landscape modunda butonlar yine sağ üstte kalsın */
+            .action-group { position: fixed; top: 10px; right: 10px; width: 180px; margin-top: 0; margin-bottom: 0; }
             #startBtn, #pauseBtn { height: 34px; font-size: 11px; }
             #settingsBtn { position: fixed; top: 10px; left: 10px; }
             
@@ -457,7 +459,7 @@
         rBtn.addEventListener("touchend", (e) => { e.preventDefault(); keys.r = false; });
         jBtn.addEventListener("touchstart", (e) => { 
             e.preventDefault(); initAudio();
-            if(isGrounded && gameState === "play") { player.vy = -6.4; isGrounded = false; playSound('jump'); } 
+            if(isGrounded && gameState === "play") { player.vy = -8.6; isGrounded = false; playSound('jump'); } 
         });
 
         lBtn.addEventListener("mousedown", () => { initAudio(); if(gameState === "play") keys.l = true; });
@@ -471,7 +473,7 @@
             if(e.key === "ArrowLeft" || e.key === "a") keys.l = true;
             if(e.key === "ArrowRight" || e.key === "d") keys.r = true;
             if((e.key === "ArrowUp" || e.key === "w" || e.key === " ") && isGrounded) {
-                player.vy = -6.4; isGrounded = false; playSound('jump');
+                player.vy = -8.6; isGrounded = false; playSound('jump');
             }
         });
         window.addEventListener("keyup", (e) => {
@@ -491,7 +493,6 @@
 
                 if (player.invuln > 0) player.invuln -= deltaTime;
 
-                // HAFİF İLERİ DOĞRU ZIPLAMA ARTIŞI: Karakter yerdeyse hızı 3.5, havadaysa (zıpladıysa) hızı 4.1 oluyor.
                 let currentSpeed = isGrounded ? 3.5 : 4.1;
                 if(keys.l) player.vx = -currentSpeed * deltaTime; 
                 else if(keys.r) player.vx = currentSpeed * deltaTime; 
