@@ -142,7 +142,7 @@
             <div class="menu-title" id="lbl-about-title">ABOUT / HAKKINDA</div>
             <div class="about-text" id="aboutText">
                 <strong>Game</strong><br>
-                Version / Sürüm: 5.1
+                Version / Sürüm: 6.0
             </div>
             <button class="close-btn" onclick="backToMainMenu()" id="lbl-about-back">BACK / GERİ</button>
         </div>
@@ -164,19 +164,22 @@
     </div>
 
     <script>
+        // -- GLOBAL STATE --
+        window.crouchState = { isCrouching: false };
+
         const dictionary = {
-            tr: { level: "SEVİYE", gold: "ALTIN", settings: "AYARLAR", close: "KAPAT", langBtn: "🌐 DİL SEÇİMİ", langTitle: "DİL SEÇİNİZ", back: "GERİ", download: "📥 APK İNDİR / GÜNCELLE", gameover: "OYUN BİTTİ", win: "TEBRİKLER! TÜM BÖLÜMLERİ GEÇTİN!", mVol: "MÜZİK SESİ", sVol: "EFEKT SESİ", aboutBtn: "ℹ️ HAKKINDA", aboutTitle: "HAKKINDA", aboutText: "<strong>Game</strong><br>Sürüm: 5.1", pause: "DURDUR", resume: "DEVAM ET", rtl: false },
-            en: { level: "LEVEL", gold: "GOLD", settings: "SETTINGS", close: "CLOSE", langBtn: "🌐 LANGUAGE", langTitle: "SELECT LANGUAGE", back: "BACK", download: "📥 DOWNLOAD / UPDATE APK", gameover: "GAME OVER", win: "YOU WIN ALL LEVELS!", mVol: "MUSIC VOLUME", sVol: "SFX VOLUME", aboutBtn: "ℹ️ ABOUT", aboutTitle: "ABOUT", aboutText: "<strong>Game</strong><br>Version: 5.1", pause: "PAUSE", resume: "RESUME", rtl: false },
-            de: { level: "STUFE", gold: "GOLD", settings: "EINSTELLUNGEN", close: "SCHLIESSEN", langBtn: "🌐 SPRACHE", langTitle: "SPRACHE WÄHLEN", back: "ZURÜCK", download: "📥 APK HERUNTERLADEN / AKTUALISIEREN", gameover: "SPIEL VORBEI", win: "ALLE STUFEN GEWONNEN!", mVol: "MUSIKLAUTSTÄRKE", sVol: "EFFEKTLAUTSTÄRKE", aboutBtn: "ℹ️ ÜBER SPIEL", aboutTitle: "ÜBER SPIEL", aboutText: "<strong>Game</strong><br>Version: 5.1", pause: "PAUSE", resume: "WEITER", rtl: false },
-            it: { level: "LIVELLO", gold: "ORO", settings: "IMPOSTAZIONI", close: "CHIUDI", langBtn: "🌐 LINGUA", langTitle: "SCEGLI LINGUA", back: "INDIETRO", download: "📥 SCARICA / AGGIORNA APK", gameover: "GAME OVER", win: "HAI VINTO TUTTI I LIVELLI!", mVol: "VOLUME MUSICA", sVol: "VOLUME EFFETTI", aboutBtn: "ℹ️ INFO", aboutTitle: "INFO", aboutText: "<strong>Game</strong><br>Versione: 5.1", pause: "PAUSA", resume: "RIPRENDI", rtl: false },
-            pt: { level: "NÍVEL", gold: "OURO", settings: "OPÇÕES", close: "FECHAR", langBtn: "🌐 IDIOMA", langTitle: "SELECIONAR IDIOMA", back: "VOLTAR", download: "📥 BAIXAR / ATUALIZAR APK", gameover: "FIM DE JOGO", win: "VOCÊ VENCEU TODOS OS NÍVEIS!", mVol: "VOLUME DA MÚSICA", sVol: "VOLUME DOS EFEITOS", aboutBtn: "ℹ️ SOBRE", aboutTitle: "SOBRE", aboutText: "<strong>Game</strong><br>Versão: 5.1", pause: "PAUSAR", resume: "CONTINUAR", rtl: false },
-            es: { level: "NIVEL", gold: "ORO", settings: "AJUSTES", close: "CERRAR", langBtn: "🌐 IDIOMA", langTitle: "SELECONAR IDIOMA", back: "ATRÁS", download: "📥 DESCARGAR / ACTUALIZAR APK", gameover: "JUEGO TERMINADO", win: "¡GANASTE TODOS LOS NIVELLES!", mVol: "VOLUMEN MÚSICA", sVol: "VOLUMEN EFECTOS", aboutBtn: "ℹ️ ACERCA DE", aboutTitle: "ACERCA DE", aboutText: "<strong>Game</strong><br>Versión: 5.1", pause: "PAUSA", resume: "REANUDAR", rtl: false },
-            fr: { level: "NIVEAU", gold: "OR", settings: "RÉGLAGES", close: "FERMER", langBtn: "🌐 LANGUE", langTitle: "CHOISIR LA LANGUE", back: "RETOUR", download: "📥 TÉLÉCHARGER / METTRE À JOUR APK", gameover: "FIN DE JEU", win: "VOUS AVEZ GAGNÉ TOUS LES NIVEAUX!", mVol: "VOLUME MUSIQUE", sVol: "VOLUME EFFETS", aboutBtn: "ℹ️ À PROPOS", aboutTitle: "À PROPOS", aboutText: "<strong>Game</strong><br>Version: 5.1", pause: "PAUSE", resume: "REPRENDRE", rtl: false },
-            ja: { level: "レベル", gold: "ゴールド", settings: "設定", close: "閉じる", langBtn: "🌐 言語選択", langTitle: "言語を選択してください", back: "戻る", download: "📥 APK ダウンロード / アップデート", gameover: "ゲームオーバー", win: "すべてのレベル teba をクリアしました！", mVol: "BGM音量", sVol: "SE音量", aboutBtn: "ℹ️ 情報", aboutTitle: "情報", aboutText: "<strong>Game</strong><br>バージョン: 5.1", pause: "一時停止", resume: "再開", rtl: false },
-            ru: { level: "УРОВЕНЬ", gold: "ЗОЛОТО", settings: "НАСТРОЙКИ", close: "ЗАКРЫТЬ", langBtn: "🌐 ЯЗЫК", langTitle: "ВЫБЕРИТЕ ЯЗЫК", back: "НАЗАД", download: "📥 СКАЧАТЬ / ОБНОВИТЬ APK", gameover: "ИГРА ОКОНЧЕНА", win: "ВЫ ВЫИГРАЛИ ВСЕ УРОВНИ!", mVol: "ГРОМКОСТЬ БГМ", sVol: "ГРОМКОСТЬ ЗВУКОВ", aboutBtn: "ℹ️ О ПРОГРАММЕ", aboutTitle: "О ПРОГРАММЕ", aboutText: "<strong>Game</strong><br>Версия: 5.1", pause: "ПАУЗА", resume: "ПРОДОЛЖИТЬ", rtl: false },
-            fa: { level: "مرحله", gold: "طلا", settings: "تنظیمات", close: "بستن", langBtn: "🌐 انتخاب زبان", langTitle: "زبان را escape کنید", back: "بازگشت", download: "📥 دانلود / بروزرسانی برنامه", gameover: "بازی تمام شد", win: "شما برنده تمام مراحل شدید!", mVol: "حجم صدای موزیک", sVol: "حجم صدای جلوه ها", aboutBtn: "ℹ️ درباره بازی", aboutTitle: "درباره بازی", aboutText: "<strong>Game</strong><br>نسخه: 5.1", pause: "توقف", resume: "ادامه", rtl: true },
-            zh: { level: "关卡", gold: "金币", settings: "设置", close: "关闭", langBtn: "🌐 语言", langTitle: "选择语言", back: "返回", download: "📥 下载 / 更新 APK", gameover: "游戏结束", win: "你赢了所有关卡！", mVol: "音乐音量", sVol: "音效音量", aboutBtn: "ℹ️ 关于", aboutTitle: "关于", aboutText: "<strong>Game</strong><br>版本: 5.1", pause: "暂停", resume: "继续", rtl: false },
-            ar: { level: "المستوى", gold: "الذهب", settings: "الإعدادات", close: "إغلاق", langBtn: "🌐 اللغة", langTitle: "اختر اللغة", back: "عودة", download: "📥 تنزيل / تحديث APK", gameover: "لعبة انتهت", win: "لقد فزت بجميع المستويات!", mVol: "صوت الموسيقى", sVol: "صunt المؤثرات", aboutBtn: "ℹ️ حول", aboutTitle: "حول", aboutText: "<strong>Game</strong><br>الإصدار: 5.1", pause: "إيقاف", resume: "استئناف", rtl: true }
+            tr: { level: "SEVİYE", gold: "ALTIN", settings: "AYARLAR", close: "KAPAT", langBtn: "🌐 DİL SEÇİMİ", langTitle: "DİL SEÇİNİZ", back: "GERİ", download: "📥 APK İNDİR / GÜNCELLE", gameover: "OYUN BİTTİ", win: "TEBRİKLER! TÜM BÖLÜMLERİ GEÇTİN!", mVol: "MÜZİK SESİ", sVol: "EFEKT SESİ", aboutBtn: "ℹ️ HAKKINDA", aboutTitle: "HAKKINDA", aboutText: "<strong>Game</strong><br>Sürüm: 6.0", pause: "DURDUR", resume: "DEVAM ET", rtl: false },
+            en: { level: "LEVEL", gold: "GOLD", settings: "SETTINGS", close: "CLOSE", langBtn: "🌐 LANGUAGE", langTitle: "SELECT LANGUAGE", back: "BACK", download: "📥 DOWNLOAD / UPDATE APK", gameover: "GAME OVER", win: "YOU WIN ALL LEVELS!", mVol: "MUSIC VOLUME", sVol: "SFX VOLUME", aboutBtn: "ℹ️ ABOUT", aboutTitle: "ABOUT", aboutText: "<strong>Game</strong><br>Version: 6.0", pause: "PAUSE", resume: "RESUME", rtl: false },
+            de: { level: "STUFE", gold: "GOLD", settings: "EINSTELLUNGEN", close: "SCHLIESSEN", langBtn: "🌐 SPRACHE", langTitle: "SPRACHE WÄHLEN", back: "ZURÜCK", download: "📥 APK HERUNTERLADEN / AKTUALISIEREN", gameover: "SPIEL VORBEI", win: "ALLE STUFEN GEWONNEN!", mVol: "MUSIKLAUTSTÄRKE", sVol: "EFFEKTLAUTSTÄRKE", aboutBtn: "ℹ️ ÜBER SPIEL", aboutTitle: "ÜBER SPIEL", aboutText: "<strong>Game</strong><br>Version: 6.0", pause: "PAUSE", resume: "WEITER", rtl: false },
+            it: { level: "LIVELLO", gold: "ORO", settings: "IMPOSTAZIONI", close: "CHIUDI", langBtn: "🌐 LINGUA", langTitle: "SCEGLI LINGUA", back: "INDIETRO", download: "📥 SCARICA / AGGIORNA APK", gameover: "GAME OVER", win: "HAI VINTO TUTTI I LIVELLI!", mVol: "VOLUME MUSICA", sVol: "VOLUME EFFETTI", aboutBtn: "ℹ️ INFO", aboutTitle: "INFO", aboutText: "<strong>Game</strong><br>Versione: 6.0", pause: "PAUSA", resume: "RIPRENDI", rtl: false },
+            pt: { level: "NÍVEL", gold: "OURO", settings: "OPÇÕES", close: "FECHAR", langBtn: "🌐 IDIOMA", langTitle: "SELECIONAR IDIOMA", back: "VOLTAR", download: "📥 BAIXAR / ATUALIZAR APK", gameover: "FIM DE JOGO", win: "VOCÊ VENCEU TODOS OS NÍVEIS!", mVol: "VOLUME DA MÚSICA", sVol: "VOLUME DOS EFEITOS", aboutBtn: "ℹ️ SOBRE", aboutTitle: "SOBRE", aboutText: "<strong>Game</strong><br>Versão: 6.0", pause: "PAUSAR", resume: "CONTINUAR", rtl: false },
+            es: { level: "NIVEL", gold: "ORO", settings: "AJUSTES", close: "CERRAR", langBtn: "🌐 IDIOMA", langTitle: "SELECONAR IDIOMA", back: "ATRÁS", download: "📥 DESCARGAR / ACTUALIZAR APK", gameover: "JUEGO TERMINADO", win: "¡GANASTE TODOS LOS NIVELLES!", mVol: "VOLUMEN MÚSICA", sVol: "VOLUMEN EFECTOS", aboutBtn: "ℹ️ ACERCA DE", aboutTitle: "ACERCA DE", aboutText: "<strong>Game</strong><br>Versión: 6.0", pause: "PAUSA", resume: "REANUDAR", rtl: false },
+            fr: { level: "NIVEAU", gold: "OR", settings: "RÉGLAGES", close: "FERMER", langBtn: "🌐 LANGUE", langTitle: "CHOISIR LA LANGUE", back: "RETOUR", download: "📥 TÉLÉCHARGER / METTRE À JOUR APK", gameover: "FIN DE JEU", win: "VOUS AVEZ GAGNÉ TOUS LES NIVEAUX!", mVol: "VOLUME MUSIQUE", sVol: "VOLUME EFFETS", aboutBtn: "ℹ️ À PROPOS", aboutTitle: "À PROPOS", aboutText: "<strong>Game</strong><br>Version: 6.0", pause: "PAUSE", resume: "REPRENDRE", rtl: false },
+            ja: { level: "レベル", gold: "ゴールド", settings: "設定", close: "閉じる", langBtn: "🌐 言語選択", langTitle: "言語を選択してください", back: "戻る", download: "📥 APK ダウンロード / アップデート", gameover: "ゲームオーバー", win: "すべてのレベル teba をクリアしました！", mVol: "BGM音量", sVol: "SE音量", aboutBtn: "ℹ️ 情報", aboutTitle: "情報", aboutText: "<strong>Game</strong><br>バージョン: 6.0", pause: "一时停止", resume: "再開", rtl: false },
+            ru: { level: "УРОВЕНЬ", gold: "ЗОЛОТО", settings: "НАСТРОЙКИ", close: "ЗАКРЫТЬ", langBtn: "🌐 ЯЗЫК", langTitle: "ВЫБЕРИТЕ ЯЗЫК", back: "НАЗАД", download: "📥 СКАЧАТЬ / ОБНОВИТЬ APK", gameover: "ИГРА ОКОНЧЕНА", win: "ВЫ ВЫИГРАЛИ ВСЕ УРОВНИ!", mVol: "ГРОМКОСТЬ БГМ", sVol: "ГРОМКОСТЬ ЗВУКОВ", aboutBtn: "ℹ️ О ПРОГРАММЕ", aboutTitle: "О ПРОГРАММЕ", aboutText: "<strong>Game</strong><br>Версия: 6.0", pause: "ПАУЗА", resume: "ПРОДОЛЖИТЬ", rtl: false },
+            fa: { level: "مرحله", gold: "طلا", settings: "تنظیمات", close: "بستن", langBtn: "🌐 انتخاب زبان", langTitle: "زبان خود را انتخاب کنید", back: "بازگشت", download: "📥 دانلود / بروزرسانی برنامه", gameover: "بازی تمام شد", win: "شما برنده تمام مراحل شدید!", mVol: "حجم صدای موزیک", sVol: "حجم صدای جلوه ها", aboutBtn: "ℹ️ درباره بازی", aboutTitle: "درباره بازی", aboutText: "<strong>Game</strong><br>نسخه: 6.0", pause: "توقف", resume: "ادامه", rtl: true },
+            zh: { level: "关卡", gold: "金币", settings: "设置", close: "关闭", langBtn: "🌐 语言", langTitle: "选择语言", back: "返回", download: "📥 下载 / 更新 APK", gameover: "游戏结束", win: "你赢了所有关卡！", mVol: "音乐音量", sVol: "音效音量", aboutBtn: "ℹ️ 关于", aboutTitle: "关于", aboutText: "<strong>Game</strong><br>版本: 6.0", pause: "暂停", resume: "继续", rtl: false },
+            ar: { level: "المستوى", gold: "الذهب", settings: "الإعدادات", close: "إغلاق", langBtn: "🌐 اللغة", langTitle: "اختر اللغة", back: "عودة", download: "📥 تنزيل / تحديث APK", gameover: "لعبة انتهت", win: "لقد فزت بجميع المستويات!", mVol: "صوت الموسيقى", sVol: "صوت المؤثرات", aboutBtn: "ℹ️ حول", aboutTitle: "حول", aboutText: "<strong>Game</strong><br>الإصدار: 6.0", pause: "إيقاف", resume: "استئناف", rtl: true }
         };
 
         let currentLang = localStorage.getItem("altay_lang") || "en";
@@ -379,347 +382,30 @@
 
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
-        let level = 1, score = 0, player = {x:50, y:150, vx:0, vy:0, w:20, h:24}, keys={l:false, r:false}, gameState = "play";
+        let level = 1, score = 0, player = {x:50, y:150, vx:0, vy:0, w:20, h:24, isBig: false, invuln: 0}, keys={l:false, r:false}, gameState = "play";
         let cameraX = 0, mapWidth = 2400, lastTime = performance.now(), isGrounded = false;
-
+        
+        // --- LEVEL DATA START ---
         let levels = [
-            { 
-                width: 2400, 
-                plats: [
-                    {x:0, y:270, w:250, h:30}, 
-                    {x:350, y:220, w:200, h:30}, 
-                    {x:650, y:180, w:200, h:30}, 
-                    {x:950, y:230, w:250, h:30}, 
-                    {x:1600, y:200, w:200, h:30}, 
-                    {x:1900, y:240, w:200, h:30}, 
-                    {x:2200, y:270, w:200, h:30},
-                    {x:400, y:150, w:100, h:20},
-                    {x:1650, y:135, w:100, h:20}
-                ],
-                movingPlat: {x: 1280, y: 210, w: 120, h: 20, startX: 1250, endX: 1500, dir: 1.5},
-                enemies: [
-                    {x:50, y:255, dir:1.0, start:10, end:230, type:"normal"}, 
-                    {x:700, y:165, dir:1.2, start:660, end:830, type:"normal"}, 
-                    {x:1700, y:185, dir:1.2, start:1610, end:1780, type:"normal"}, 
-                    {x:1950, y:225, dir:1.4, start:1910, end:2080, type:"normal"}
-                ], 
-                coins: [
-                    {x:100, y:240}, {x:130, y:240}, {x:160, y:240},
-                    {x:450, y:180}, {x:480, y:180}, {x:510, y:180},
-                    {x:750, y:140}, {x:780, y:140}, {x:810, y:140},
-                    {x:1050, y:190}, {x:1080, y:190}, {x:1110, y:190},
-                    {x:1340, y:160}, {x:1370, y:160}, {x:1400, y:160},
-                    {x:1700, y:160}, {x:1730, y:160}, {x:1760, y:160},
-                    {x:2000, y:200}, {x:2030, y:200}, {x:2060, y:200},
-                    {x:2250, y:230}, {x:2280, y:230}, {x:2310, y:230},
-                    {x:410, y:120}, {x:440, y:120}, {x:470, y:120},
-                    {x:1660, y:105}, {x:1690, y:105}, {x:1720, y:105}
-                ], 
-                checkpoints: [{x:1050, y:230, active:false}], 
-                finish: {x:2350, y:230, w:30, h:40}
-            },
-            { 
-                width: 2400, 
-                plats: [
-                    {x:0, y:270, w:200, h:30}, 
-                    {x:300, y:210, w:180, h:30}, 
-                    {x:580, y:170, w:220, h:30}, 
-                    {x:900, y:220, w:200, h:30}, 
-                    {x:1550, y:190, w:250, h:30}, 
-                    {x:1900, y:230, w:180, h:30}, 
-                    {x:2150, y:270, w:250, h:30},
-                    {x:640, y:115, w:100, h:20},
-                    {x:1940, y:160, w:100, h:20}
-                ],
-                movingPlat: {x: 1200, y: 190, w: 110, h: 20, startX: 1150, endX: 1450, dir: 1.8},
-                enemies: [
-                    {x:40, y:255, dir:1.2, start:10, end:180, type:"normal"}, 
-                    {x:320, y:195, dir:1.0, start:310, end:460, type:"normal"}, 
-                    {x:620, y:155, dir:1.4, start:590, end:780, type:"normal"}, 
-                    {x:1650, y:175, dir:1.4, start:1560, end:1780, type:"normal"}, 
-                    {x:2200, y:255, dir:1.5, start:2160, end:2380, type:"normal"},
-                    {x:1580, y:175, dir:1.5, start:1560, end:1720, type:"fast"}
-                ], 
-                coins: [
-                    {x:90, y:240}, {x:120, y:240}, {x:150, y:240},
-                    {x:380, y:170}, {x:410, y:170}, {x:440, y:170},
-                    {x:680, y:130}, {x:710, y:130}, {x:740, y:130},
-                    {x:1000, y:180}, {x:1030, y:180}, {x:1060, y:180},
-                    {x:1250, y:140}, {x:1280, y:140}, {x:1310, y:140},
-                    {x:1680, y:150}, {x:1710, y:150}, {x:1740, y:150},
-                    {x:1980, y:190}, {x:2040, y:190},
-                    {x:660, y:85}, {x:690, y:85}, {x:720, y:85},
-                    {x:1950, y:130}, {x:1980, y:130}, {x:2010, y:130}
-                ], 
-                checkpoints: [{x:1000, y:220, active:false}], 
-                finish: {x:2350, y:230, w:30, h:40}
-            },
-            { 
-                width: 2400, 
-                plats: [
-                    {x:0, y:270, w:220, h:30}, 
-                    {x:320, y:200, w:150, h:30}, 
-                    {x:550, y:230, w:200, h:30}, 
-                    {x:850, y:180, w:180, h:30}, 
-                    {x:1500, y:220, w:200, h:30}, 
-                    {x:1800, y:170, w:220, h:30}, 
-                    {x:2100, y:270, w:300, h:30},
-                    {x:600, y:160, w:100, h:20},
-                    {x:1850, y:115, w:100, h:20}
-                ],
-                movingPlat: {x: 1150, y: 200, w: 100, h: 20, startX: 1080, endX: 1400, dir: 2.0},
-                enemies: [
-                    {x:30, y:255, dir:1.3, start:10, end:200, type:"normal"}, 
-                    {x:570, y:215, dir:1.2, start:560, end:730, type:"normal"}, 
-                    {x:1520, y:205, dir:1.4, start:1510, end:1680, type:"normal"}, 
-                    {x:1900, y:155, dir:1.5, start:1820, end:2000, type:"normal"},
-                    {x:2150, y:255, dir:1.6, start:2110, end:2350, type:"fast"}
-                ], 
-                coins: [
-                    {x:110, y:240}, {x:140, y:240}, {x:170, y:240},
-                    {x:380, y:160}, {x:410, y:160}, {x:440, y:160},
-                    {x:650, y:190}, {x:680, y:190}, {x:710, y:190},
-                    {x:930, y:140}, {x:960, y:140}, {x:990, y:140},
-                    {x:1200, y:150}, {x:1230, y:150}, {x:1260, y:150},
-                    {x:1600, y:180}, {x:1630, y:180}, {x:1660, y:180},
-                    {x:1900, y:130}, {x:1930, y:130}, {x:1960, y:130},
-                    {x:610, y:130}, {x:640, y:130}, {x:670, y:130},
-                    {x:1860, y:85}, {x:1890, y:85}, {x:1920, y:85}
-                ], 
-                checkpoints: [{x:950, y:180, active:false}], 
-                finish: {x:2350, y:230, w:30, h:40}
-            },
-            { 
-                width: 2400, 
-                plats: [
-                    {x:0, y:270, w:250, h:30}, 
-                    {x:380, y:220, w:180, h:30}, 
-                    {x:680, y:170, w:180, h:30}, 
-                    {x:960, y:230, w:200, h:30}, 
-                    {x:1620, y:200, w:180, h:30}, 
-                    {x:1900, y:240, w:180, h:30}, 
-                    {x:2180, y:270, w:220, h:30},
-                    {x:420, y:155, w:100, h:20},
-                    {x:1660, y:140, w:100, h:20}
-                ],
-                movingPlat: {x: 1250, y: 180, w: 110, h: 20, startX: 1200, endX: 1550, dir: 2.2},
-                enemies: [
-                    {x:40, y:255, dir:1.4, start:10, end:230, type:"normal"}, 
-                    {x:400, y:205, dir:1.3, start:390, end:540, type:"normal"}, 
-                    {x:750, y:155, dir:1.8, start:690, end:840, type:"normal"}, 
-                    {x:1640, y:185, dir:1.5, start:1630, end:1780, type:"normal"}, 
-                    {x:1920, y:225, dir:1.4, start:1910, end:2060, type:"normal"},
-                    {x:50, y:255, dir:1.7, start:30, end:220, type:"fast"}
-                ], 
-                coins: [
-                    {x:100, y:240}, {x:130, y:240}, {x:160, y:240},
-                    {x:470, y:180}, {x:500, y:180}, {x:530, y:180},
-                    {x:770, y:130}, {x:800, y:130}, {x:830, y:130},
-                    {x:1060, y:190}, {x:1090, y:190}, {x:1120, y:190},
-                    {x:1300, y:130}, {x:1330, y:130}, {x:1360, y:130},
-                    {x:430, y:125}, {x:460, y:125}, {x:490, y:125},
-                    {x:1670, y:110}, {x:1700, y:110}, {x:1730, y:110}
-                ], 
-                checkpoints: [{x:1060, y:230, active:false}], 
-                finish: {x:2350, y:230, w:30, h:40}
-            },
-            { 
-                width: 2400, 
-                plats: [
-                    {x:0, y:270, w:180, h:30}, 
-                    {x:280, y:210, w:180, h:30}, 
-                    {x:550, y:170, w:180, h:30}, 
-                    {x:820, y:230, w:200, h:30}, 
-                    {x:1500, y:190, w:220, h:30}, 
-                    {x:1820, y:240, w:180, h:30}, 
-                    {x:2100, y:270, w:300, h:30},
-                    {x:320, y:150, w:100, h:20},
-                    {x:1540, y:135, w:100, h:20}
-                ],
-                movingPlat: {x: 1150, y: 210, w: 100, h: 20, startX: 1080, endX: 1420, dir: 2.4},
-                enemies: [
-                    {x:30, y:255, dir:1.5, start:10, end:160, type:"normal"}, 
-                    {x:350, y:195, dir:1.5, start:290, end:440, type:"normal"}, 
-                    {x:570, y:155, dir:1.6, start:560, end:710, type:"normal"}, 
-                    {x:1600, y:175, dir:1.7, start:1510, end:1700, type:"normal"},
-                    {x:2150, y:255, dir:1.8, start:2120, end:2360, type:"fast"}
-                ], 
-                coins: [
-                    {x:80, y:240}, {x:110, y:240}, {x:140, y:240},
-                    {x:370, y:170}, {x:400, y:170}, {x:430, y:170},
-                    {x:640, y:130}, {x:670, y:130}, {x:700, y:130},
-                    {x:920, y:190}, {x:950, y:190}, {x:980, y:190},
-                    {x:330, y:120}, {x:360, y:120}, {x:390, y:120},
-                    {x:1550, y:100}, {x:1580, y:100}, {x:1610, y:110}
-                ], 
-                checkpoints: [{x:920, y:230, active:false}], 
-                finish: {x:2350, y:230, w:30, h:40}
-            },
-            { 
-                width: 2400, 
-                plats: [
-                    {x:0, y:270, w:220, h:30}, 
-                    {x:320, y:200, w:200, h:30}, 
-                    {x:620, y:240, w:160, h:30}, 
-                    {x:880, y:180, w:200, h:30}, 
-                    {x:1550, y:220, w:200, h:30}, 
-                    {x:1850, y:170, w:200, h:30}, 
-                    {x:2150, y:270, w:250, h:30},
-                    {x:360, y:140, w:100, h:20},
-                    {x:1890, y:115, w:100, h:20}
-                ],
-                movingPlat: {x: 1180, y: 190, w: 120, h: 20, startX: 1120, endX: 1480, dir: 2.5},
-                enemies: [
-                    {x:50, y:255, dir:1.6, start:10, end:200, type:"normal"}, 
-                    {x:340, y:185, dir:1.7, start:330, end:500, type:"normal"}, 
-                    {x:640, y:225, dir:1.5, start:630, end:760, type:"normal"}, 
-                    {x:1870, y:155, dir:1.8, start:1860, end:2030, type:"normal"},
-                    {x:1580, y:205, dir:1.9, start:1560, end:1720, type:"fast"}
-                ], 
-                coins: [
-                    {x:110, y:240}, {x:140, y:240}, {x:170, y:240},
-                    {x:420, y:160}, {x:450, y:160}, {x:480, y:160},
-                    {x:700, y:200}, {x:730, y:200}, {x:760, y:200},
-                    {x:980, y:140}, {x:1010, y:140}, {x:1040, y:140},
-                    {x:370, y:110}, {x:400, y:110}, {x:430, y:110},
-                    {x:1900, y:85}, {x:1930, y:85}, {x:1960, y:85}
-                ], 
-                checkpoints: [{x:980, y:180, active:false}], 
-                finish: {x:2350, y:230, w:30, h:40}
-            },
-            { 
-                width: 2400, 
-                plats: [
-                    {x:0, y:270, w:200, h:30}, 
-                    {x:300, y:220, w:180, h:30}, 
-                    {x:560, y:170, w:180, h:30}, 
-                    {x:820, y:230, w:180, h:30}, 
-                    {x:1450, y:190, w:220, h:30}, 
-                    {x:1750, y:240, w:180, h:30}, 
-                    {x:2050, y:270, w:350, h:30},
-                    {x:340, y:155, w:100, h:20},
-                    {x:1490, y:135, w:100, h:20}
-                ],
-                movingPlat: {x: 1100, y: 200, w: 100, h: 20, startX: 1040, endX: 1380, dir: 2.6},
-                enemies: [
-                    {x:40, y:255, dir:1.8, start:10, end:180, type:"normal"}, 
-                    {x:320, y:205, dir:1.5, start:310, end:460, type:"normal"}, 
-                    {x:620, y:155, dir:2.2, start:570, end:720, type:"normal"}, 
-                    {x:1550, y:175, dir:2.0, start:1460, end:1650, type:"normal"},
-                    {x:2100, y:255, dir:2.0, start:2060, end:2360, type:"fast"}
-                ], 
-                coins: [
-                    {x:90, y:240}, {x:120, y:240}, {x:150, y:240},
-                    {x:390, y:180}, {x:420, y:180}, {x:450, y:180},
-                    {x:650, y:130}, {x:680, y:130}, {x:710, y:130},
-                    {x:910, y:190}, {x:940, y:190}, {x:970, y:190},
-                    {x:350, y:125}, {x:380, y:125}, {x:410, y:125},
-                    {x:1500, y:105}, {x:1530, y:105}, {x:1560, y:105}
-                ], 
-                checkpoints: [{x:910, y:230, active:false}], 
-                finish: {x:2350, y:230, w:30, h:40}
-            },
-            { 
-                width: 2400, 
-                plats: [
-                    {x:0, y:270, w:250, h:30}, 
-                    {x:360, y:210, w:160, h:30}, 
-                    {x:600, y:170, w:200, h:30}, 
-                    {x:900, y:230, w:160, h:30}, 
-                    {x:1500, y:200, w:200, h:30}, 
-                    {x:1800, y:240, w:160, h:30}, 
-                    {x:2100, y:270, w:300, h:30},
-                    {x:400, y:150, w:100, h:20},
-                    {x:1540, y:140, w:100, h:20}
-                ],
-                movingPlat: {x: 1160, y: 210, w: 110, h: 20, startX: 1100, endX: 1440, dir: 2.8},
-                enemies: [
-                    {x:50, y:255, dir:2.0, start:10, end:230, type:"normal"}, 
-                    {x:380, y:195, dir:1.8, start:370, end:500, type:"normal"}, 
-                    {x:680, y:155, dir:2.4, start:610, end:780, type:"normal"}, 
-                    {x:1520, y:185, dir:2.2, start:1510, end:1680, type:"normal"}, 
-                    {x:1820, y:225, dir:2.0, start:1810, end:1940, type:"normal"},
-                    {x:60, y:255, dir:2.1, start:20, end:220, type:"fast"}
-                ], 
-                coins: [
-                    {x:120, y:240}, {x:150, y:240}, {x:180, y:240},
-                    {x:440, y:170}, {x:470, y:170}, {x:500, y:170},
-                    {x:700, y:130}, {x:730, y:130}, {x:760, y:130},
-                    {x:980, y:190}, {x:1010, y:190}, {x:1040, y:190},
-                    {x:410, y:120}, {x:440, y:120}, {x:470, y:120},
-                    {x:1550, y:110}, {x:1580, y:110}, {x:1610, y:110}
-                ], 
-                checkpoints: [{x:980, y:230, active:false}], 
-                finish: {x:2350, y:230, w:30, h:40}
-            },
-            { 
-                width: 2400, 
-                plats: [
-                    {x:0, y:270, w:180, h:30}, 
-                    {x:280, y:200, w:180, h:30}, 
-                    {x:540, y:240, w:180, h:30}, 
-                    {x:800, y:180, w:180, h:30}, 
-                    {x:1450, y:220, w:200, h:30}, 
-                    {x:1750, y:170, w:200, h:30}, 
-                    {x:2050, y:270, w:350, h:30},
-                    {x:320, y:140, w:100, h:20},
-                    {x:1500, y:160, w:100, h:20}
-                ],
-                movingPlat: {x: 1100, y: 190, w: 100, h: 20, startX: 1020, endX: 1380, dir: 3.0},
-                enemies: [
-                    {x:30, y:255, dir:2.2, start:10, end:160, type:"normal"}, 
-                    {x:350, y:185, dir:2.5, start:290, end:440, type:"normal"}, 
-                    {x:560, y:225, dir:2.0, start:550, end:700, type:"normal"}, 
-                    {x:1550, y:205, dir:2.2, start:1460, end:1630, type:"normal"},
-                    {x:1480, y:205, dir:2.2, start:1460, end:1620, type:"fast"}
-                ], 
-                coins: [
-                    {x:80, y:240}, {x:110, y:240}, {x:140, y:240},
-                    {x:370, y:160}, {x:400, y:170}, {x:430, y:160},
-                    {x:630, y:200}, {x:660, y:200}, {x:690, y:200},
-                    {x:890, y:140}, {x:920, y:140}, {x:950, y:140},
-                    {x:330, y:110}, {x:360, y:110}, {x:390, y:110},
-                    {x:1510, y:130}, {x:1540, y:130}, {x:1570, y:130}
-                ], 
-                checkpoints: [{x:890, y:180, active:false}], 
-                finish: {x:2350, y:230, w:30, h:40}
-            },
-            { 
-                width: 2400, 
-                plats: [
-                    {x:0, y:270, w:200, h:30}, 
-                    {x:320, y:210, w:160, h:30}, 
-                    {x:580, y:170, w:160, h:30}, 
-                    {x:840, y:230, w:160, h:30}, 
-                    {x:1500, y:190, w:200, h:30}, 
-                    {x:1800, y:240, w:160, h:30}, 
-                    {x:2100, y:270, w:300, h:30},
-                    {x:360, y:150, w:100, h:20},
-                    {x:1540, y:130, w:100, h:20}
-                ],
-                movingPlat: {x: 1120, y: 200, w: 90, h: 20, startX: 1040, endX: 1420, dir: 3.2},
-                enemies: [
-                    {x:40, y:255, dir:2.5, start:10, end:180, type:"normal"}, 
-                    {x:340, y:195, dir:2.2, start:330, end:460, type:"normal"}, 
-                    {x:640, y:155, dir:2.8, start:590, end:720, type:"normal"}, 
-                    {x:1580, y:175, dir:2.6, start:1510, end:1680, type:"normal"},
-                    {x:2150, y:255, dir:2.3, start:2120, end:2360, type:"fast"}
-                ], 
-                coins: [
-                    {x:100, y:240}, {x:130, y:240}, {x:160, y:240},
-                    {x:400, y:170}, {x:430, y:170}, {x:460, y:170},
-                    {x:660, y:130}, {x:690, y:130}, {x:720, y:130},
-                    {x:920, y:190}, {x:950, y:190}, {x:980, y:190},
-                    {x:370, y:120}, {x:400, y:120}, {x:430, y:120},
-                    {x:1550, y:100}, {x:1580, y:100}, {x:1610, y:100}
-                ], 
-                checkpoints: [{x:920, y:230, active:false}], 
-                finish: {x:2350, y:230, w:30, h:40}
-            }
+            { width: 2400, plats: [{x:0, y:270, w:250, h:30}, {x:350, y:220, w:200, h:30}, {x:650, y:180, w:200, h:30}, {x:950, y:230, w:250, h:30}, {x:1600, y:200, w:200, h:30}, {x:1900, y:240, w:200, h:30}, {x:2200, y:270, w:200, h:30}, {x:400, y:150, w:100, h:20}, {x:1650, y:135, w:100, h:20}], movingPlat: {x: 1280, y: 210, w: 120, h: 20, startX: 1250, endX: 1500, dir: 1.5}, enemies: [{x:50, y:255, dir:1.0, start:10, end:230, type:"normal"}, {x:700, y:165, dir:1.2, start:660, end:830, type:"normal"}, {x:1700, y:185, dir:1.2, start:1610, end:1780, type:"normal"}, {x:1950, y:225, dir:1.4, start:1910, end:2080, type:"normal"}], coins: [{x:100, y:240}, {x:130, y:240}, {x:160, y:240}, {x:450, y:180}, {x:480, y:180}, {x:510, y:180}, {x:750, y:140}, {x:780, y:140}, {x:810, y:140}, {x:1050, y:190}, {x:1080, y:190}, {x:1110, y:190}, {x:1340, y:160}, {x:1370, y:160}, {x:1400, y:160}, {x:1700, y:160}, {x:1730, y:160}, {x:1760, y:160}, {x:2000, y:200}, {x:2030, y:200}, {x:2060, y:200}, {x:2250, y:230}, {x:2280, y:230}, {x:2310, y:230}, {x:410, y:120}, {x:440, y:120}, {x:470, y:120}, {x:1660, y:105}, {x:1690, y:105}, {x:1720, y:105}], checkpoints: [{x:1050, y:230, active:false}], growSquares: [{x:420, y:195}, {x:1680, y:175}], finish: {x:2350, y:230, w:30, h:40}},
+            { width: 2400, plats: [{x:0, y:270, w:200, h:30}, {x:300, y:210, w:180, h:30}, {x:580, y:170, w:220, h:30}, {x:900, y:220, w:200, h:30}, {x:1550, y:190, w:250, h:30}, {x:1900, y:230, w:180, h:30}, {x:2150, y:270, w:250, h:30}, {x:640, y:115, w:100, h:20}, {x:1940, y:160, w:100, h:20}], movingPlat: {x: 1200, y: 190, w: 110, h: 20, startX: 1150, endX: 1450, dir: 1.8}, enemies: [{x:40, y:255, dir:1.2, start:10, end:180, type:"normal"}, {x:320, y:195, dir:1.0, start:310, end:460, type:"normal"}, {x:620, y:155, dir:1.4, start:590, end:780, type:"normal"}, {x:1650, y:175, dir:1.4, start:1560, end:1780, type:"normal"}, {x:2200, y:255, dir:1.5, start:2160, end:2380, type:"normal"}, {x:1580, y:175, dir:1.5, start:1560, end:1720, type:"fast"}], coins: [{x:90, y:240}, {x:120, y:240}, {x:150, y:240}, {x:380, y:170}, {x:410, y:170}, {x:440, y:170}, {x:680, y:130}, {x:710, y:130}, {x:740, y:130}, {x:1000, y:180}, {x:1030, y:180}, {x:1060, y:180}, {x:1250, y:140}, {x:1280, y:140}, {x:1310, y:140}, {x:1680, y:150}, {x:1710, y:150}, {x:1740, y:150}, {x:1980, y:190}, {x:2040, y:190}, {x:660, y:85}, {x:690, y:85}, {x:720, y:85}, {x:1950, y:130}, {x:1980, y:130}, {x:2010, y:130}], checkpoints: [{x:1000, y:220, active:false}], growSquares: [{x:350, y:185}, {x:1620, y:165}], finish: {x:2350, y:230, w:30, h:40}},
+            { width: 2400, plats: [{x:0, y:270, w:220, h:30}, {x:320, y:200, w:150, h:30}, {x:550, y:230, w:200, h:30}, {x:850, y:180, w:180, h:30}, {x:1500, y:220, w:200, h:30}, {x:1800, y:170, w:220, h:30}, {x:2100, y:270, w:300, h:30}, {x:600, y:160, w:100, h:20}, {x:1850, y:115, w:100, h:20}], movingPlat: {x: 1150, y: 200, w: 100, h: 20, startX: 1080, endX: 1400, dir: 2.0}, enemies: [{x:30, y:255, dir:1.3, start:10, end:200, type:"normal"}, {x:570, y:215, dir:1.2, start:560, end:730, type:"normal"}, {x:1520, y:205, dir:1.4, start:1510, end:1680, type:"normal"}, {x:1900, y:155, dir:1.5, start:1820, end:2000, type:"normal"}, {x:2150, y:255, dir:1.6, start:2110, end:2350, type:"fast"}], coins: [{x:110, y:240}, {x:140, y:240}, {x:170, y:240}, {x:380, y:160}, {x:410, y:160}, {x:440, y:160}, {x:650, y:190}, {x:680, y:190}, {x:710, y:190}, {x:930, y:140}, {x:960, y:140}, {x:990, y:140}, {x:1200, y:150}, {x:1230, y:150}, {x:1260, y:150}, {x:1600, y:180}, {x:1630, y:180}, {x:1660, y:180}, {x:1900, y:130}, {x:1930, y:130}, {x:1960, y:130}, {x:610, y:130}, {x:640, y:130}, {x:670, y:130}, {x:1860, y:85}, {x:1890, y:85}, {x:1920, y:85}], checkpoints: [{x:950, y:180, active:false}], growSquares: [{x:600, y:205}, {x:1880, y:145}], finish: {x:2350, y:230, w:30, h:40}},
+            { width: 2400, plats: [{x:0, y:270, w:250, h:30}, {x:380, y:220, w:180, h:30}, {x:680, y:170, w:180, h:30}, {x:960, y:230, w:200, h:30}, {x:1620, y:200, w:180, h:30}, {x:1900, y:240, w:180, h:30}, {x:2180, y:270, w:220, h:30}, {x:420, y:155, w:100, h:20}, {x:1660, y:140, w:100, h:20}], movingPlat: {x: 1250, y: 180, w: 110, h: 20, startX: 1200, endX: 1550, dir: 2.2}, enemies: [{x:40, y:255, dir:1.4, start:10, end:230, type:"normal"}, {x:400, y:205, dir:1.3, start:390, end:540, type:"normal"}, {x:750, y:155, dir:1.8, start:690, end:840, type:"normal"}, {x:1640, y:185, dir:1.5, start:1630, end:1780, type:"normal"}, {x:1920, y:225, dir:1.4, start:1910, end:2060, type:"normal"}, {x:50, y:255, dir:1.7, start:30, end:220, type:"fast"}], coins: [{x:100, y:240}, {x:130, y:240}, {x:160, y:240}, {x:470, y:180}, {x:500, y:180}, {x:530, y:180}, {x:770, y:130}, {x:800, y:130}, {x:830, y:130}, {x:1060, y:190}, {x:1090, y:190}, {x:1120, y:190}, {x:1300, y:130}, {x:1330, y:130}, {x:1360, y:130}, {x:430, y:125}, {x:460, y:125}, {x:490, y:125}, {x:1670, y:110}, {x:1700, y:110}, {x:1730, y:110}], checkpoints: [{x:1060, y:230, active:false}], growSquares: [{x:440, y:130}, {x:1680, y:115}], finish: {x:2350, y:230, w:30, h:40}},
+            { width: 2400, plats: [{x:0, y:270, w:180, h:30}, {x:280, y:210, w:180, h:30}, {x:550, y:170, w:180, h:30}, {x:820, y:230, w:200, h:30}, {x:1500, y:190, w:220, h:30}, {x:1820, y:240, w:180, h:30}, {x:2100, y:270, w:300, h:30}, {x:320, y:150, w:100, h:20}, {x:1540, y:135, w:100, h:20}], movingPlat: {x: 1150, y: 210, w: 100, h: 20, startX: 1080, endX: 1420, dir: 2.4}, enemies: [{x:30, y:255, dir:1.5, start:10, end:160, type:"normal"}, {x:350, y:195, dir:1.5, start:290, end:440, type:"normal"}, {x:570, y:155, dir:1.6, start:560, end:710, type:"normal"}, {x:1600, y:175, dir:1.7, start:1510, end:1700, type:"normal"}, {x:2150, y:255, dir:1.8, start:2120, end:2360, type:"fast"}], coins: [{x:80, y:240}, {x:110, y:240}, {x:140, y:240}, {x:370, y:170}, {x:400, y:170}, {x:430, y:170}, {x:640, y:130}, {x:670, y:130}, {x:700, y:130}, {x:920, y:190}, {x:950, y:190}, {x:980, y:190}, {x:330, y:120}, {x:360, y:120}, {x:390, y:120}, {x:1550, y:100}, {x:1580, y:100}, {x:1610, y:110}], checkpoints: [{x:920, y:230, active:false}], growSquares: [{x:340, y:125}, {x:1560, y:110}], finish: {x:2350, y:230, w:30, h:40}},
+            { width: 2400, plats: [{x:0, y:270, w:220, h:30}, {x:320, y:200, w:200, h:30}, {x:620, y:240, w:160, h:30}, {x:880, y:180, w:200, h:30}, {x:1550, y:220, w:200, h:30}, {x:1850, y:170, w:200, h:30}, {x:2150, y:270, w:250, h:30}, {x:360, y:140, w:100, h:20}, {x:1890, y:115, w:100, h:20}], movingPlat: {x: 1180, y: 190, w: 120, h: 20, startX: 1120, endX: 1480, dir: 2.5}, enemies: [{x:50, y:255, dir:1.6, start:10, end:200, type:"normal"}, {x:340, y:185, dir:1.7, start:330, end:500, type:"normal"}, {x:640, y:225, dir:1.5, start:630, end:760, type:"normal"}, {x:1870, y:155, dir:1.8, start:1860, end:2030, type:"normal"}, {x:1580, y:205, dir:1.9, start:1560, end:1720, type:"fast"}], coins: [{x:110, y:240}, {x:140, y:240}, {x:170, y:240}, {x:420, y:160}, {x:450, y:160}, {x:480, y:160}, {x:700, y:200}, {x:730, y:200}, {x:760, y:200}, {x:980, y:140}, {x:1010, y:140}, {x:1040, y:140}, {x:370, y:110}, {x:400, y:110}, {x:430, y:110}, {x:1900, y:85}, {x:1930, y:85}, {x:1960, y:85}], checkpoints: [{x:980, y:180, active:false}], growSquares: [{x:380, y:115}, {x:1910, y:90}], finish: {x:2350, y:230, w:30, h:40}},
+            { width: 2400, plats: [{x:0, y:270, w:200, h:30}, {x:300, y:220, w:180, h:30}, {x:560, y:170, w:180, h:30}, {x:820, y:230, w:180, h:30}, {x:1450, y:190, w:220, h:30}, {x:1750, y:240, w:180, h:30}, {x:2050, y:270, w:350, h:30}, {x:340, y:155, w:100, h:20}, {x:1490, y:135, w:100, h:20}], movingPlat: {x: 1100, y: 200, w: 100, h: 20, startX: 1040, endX: 1380, dir: 2.6}, enemies: [{x:40, y:255, dir:1.8, start:10, end:180, type:"normal"}, {x:320, y:205, dir:1.5, start:310, end:460, type:"normal"}, {x:620, y:155, dir:2.2, start:570, end:720, type:"normal"}, {x:1550, y:175, dir:2.0, start:1460, end:1650, type:"normal"}, {x:2100, y:255, dir:2.0, start:2060, end:2360, type:"fast"}], coins: [{x:90, y:240}, {x:120, y:240}, {x:150, y:240}, {x:390, y:180}, {x:420, y:180}, {x:450, y:180}, {x:650, y:130}, {x:680, y:130}, {x:710, y:130}, {x:910, y:190}, {x:940, y:190}, {x:970, y:190}, {x:350, y:125}, {x:380, y:125}, {x:410, y:125}, {x:1500, y:105}, {x:1530, y:105}, {x:1560, y:105}], checkpoints: [{x:910, y:230, active:false}], growSquares: [{x:360, y:130}, {x:1510, y:110}], finish: {x:2350, y:230, w:30, h:40}},
+            { width: 2400, plats: [{x:0, y:270, w:250, h:30}, {x:360, y:210, w:160, h:30}, {x:600, y:170, w:200, h:30}, {x:900, y:230, w:160, h:30}, {x:1500, y:200, w:200, h:30}, {x:1800, y:240, w:160, h:30}, {x:2100, y:270, w:300, h:30}, {x:400, y:150, w:100, h:20}, {x:1540, y:140, w:100, h:20}], movingPlat: {x: 1160, y: 210, w: 110, h: 20, startX: 1100, endX: 1440, dir: 2.8}, enemies: [{x:50, y:255, dir:2.0, start:10, end:230, type:"normal"}, {x:380, y:195, dir:1.8, start:370, end:500, type:"normal"}, {x:680, y:155, dir:2.4, start:610, end:780, type:"normal"}, {x:1520, y:185, dir:2.2, start:1510, end:1680, type:"normal"}, {x:1820, y:225, dir:2.0, start:1810, end:1940, type:"normal"}, {x:60, y:255, dir:2.1, start:20, end:220, type:"fast"}], coins: [{x:120, y:240}, {x:150, y:240}, {x:180, y:240}, {x:440, y:170}, {x:470, y:170}, {x:500, y:170}, {x:700, y:130}, {x:730, y:130}, {x:760, y:130}, {x:980, y:190}, {x:1010, y:190}, {x:1040, y:190}, {x:410, y:120}, {x:440, y:120}, {x:470, y:120}, {x:1550, y:110}, {x:1580, y:110}, {x:1610, y:110}], checkpoints: [{x:980, y:230, active:false}], growSquares: [{x:420, y:125}, {x:1560, y:115}], finish: {x:2350, y:230, w:30, h:40}},
+            { width: 2400, plats: [{x:0, y:270, w:180, h:30}, {x:280, y:200, w:180, h:30}, {x:540, y:240, w:180, h:30}, {x:800, y:180, w:180, h:30}, {x:1450, y:220, w:200, h:30}, {x:1750, y:170, w:200, h:30}, {x:2050, y:270, w:350, h:30}, {x:320, y:140, w:100, h:20}, {x:1500, y:160, w:100, h:20}], movingPlat: {x: 1100, y: 190, w: 100, h: 20, startX: 1020, endX: 1380, dir: 3.0}, enemies: [{x:30, y:255, dir:2.2, start:10, end:160, type:"normal"}, {x:350, y:185, dir:2.5, start:290, end:440, type:"normal"}, {x:560, y:225, dir:2.0, start:550, end:700, type:"normal"}, {x:1550, y:205, dir:2.2, start:1460, end:1630, type:"normal"}, {x:1480, y:205, dir:2.2, start:1460, end:1620, type:"fast"}], coins: [{x:80, y:240}, {x:110, y:240}, {x:140, y:240}, {x:370, y:160}, {x:400, y:170}, {x:430, y:160}, {x:630, y:200}, {x:660, y:200}, {x:690, y:200}, {x:890, y:140}, {x:920, y:140}, {x:950, y:140}, {x:330, y:110}, {x:360, y:110}, {x:390, y:110}, {x:1510, y:130}, {x:1540, y:130}, {x:1570, y:130}], checkpoints: [{x:890, y:180, active:false}], growSquares: [{x:340, y:115}, {x:1520, y:135}], finish: {x:2350, y:230, w:30, h:40}},
+            { width: 2400, plats: [{x:0, y:270, w:200, h:30}, {x:320, y:210, w:160, h:30}, {x:580, y:170, w:160, h:30}, {x:840, y:230, w:160, h:30}, {x:1500, y:190, w:200, h:30}, {x:1800, y:240, w:160, h:30}, {x:2100, y:270, w:300, h:30}, {x:360, y:150, w:100, h:20}, {x:1540, y:130, w:100, h:20}], movingPlat: {x: 1120, y: 200, w: 90, h: 20, startX: 1040, endX: 1420, dir: 3.2}, enemies: [{x:40, y:255, dir:2.5, start:10, end:180, type:"normal"}, {x:340, y:195, dir:2.2, start:330, end:460, type:"normal"}, {x:640, y:155, dir:2.8, start:590, end:720, type:"normal"}, {x:1580, y:175, dir:2.6, start:1510, end:1680, type:"normal"}, {x:2150, y:255, dir:2.3, start:2120, end:2360, type:"fast"}], coins: [{x:100, y:240}, {x:130, y:240}, {x:160, y:240}, {x:400, y:170}, {x:430, y:170}, {x:460, y:170}, {x:660, y:130}, {x:690, y:130}, {x:720, y:130}, {x:920, y:190}, {x:950, y:190}, {x:980, y:190}, {x:370, y:120}, {x:400, y:120}, {x:430, y:120}, {x:1550, y:100}, {x:1580, y:100}, {x:1610, y:100}], checkpoints: [{x:920, y:230, active:false}], growSquares: [{x:380, y:125}, {x:1560, y:105}], finish: {x:2350, y:230, w:30, h:40}}
         ];
+        // --- LEVEL DATA END ---
 
         function loadLevel(fromDeath = false) {
             let current = levels[level-1];
+            player.isBig = false;
+            player.h = 24;
+            player.invuln = 0;
+
             if (fromDeath) {
                 let activeCp = current.checkpoints.find(cp => cp.active);
                 if (activeCp) {
@@ -771,7 +457,7 @@
         rBtn.addEventListener("touchend", (e) => { e.preventDefault(); keys.r = false; });
         jBtn.addEventListener("touchstart", (e) => { 
             e.preventDefault(); initAudio();
-            if(isGrounded && gameState === "play") { player.vy = -7.6; isGrounded = false; playSound('jump'); } 
+            if(isGrounded && gameState === "play") { player.vy = -6.4; isGrounded = false; playSound('jump'); } 
         });
 
         lBtn.addEventListener("mousedown", () => { initAudio(); if(gameState === "play") keys.l = true; });
@@ -785,7 +471,7 @@
             if(e.key === "ArrowLeft" || e.key === "a") keys.l = true;
             if(e.key === "ArrowRight" || e.key === "d") keys.r = true;
             if((e.key === "ArrowUp" || e.key === "w" || e.key === " ") && isGrounded) {
-                player.vy = -7.6; isGrounded = false; playSound('jump');
+                player.vy = -6.4; isGrounded = false; playSound('jump');
             }
         });
         window.addEventListener("keyup", (e) => {
@@ -803,7 +489,14 @@
             if(gameState === "play") {
                 tickBackgroundMusic();
 
-                if(keys.l) player.vx = -3.5 * deltaTime; else if(keys.r) player.vx = 3.5 * deltaTime; else player.vx *= Math.pow(0.82, deltaTime);
+                if (player.invuln > 0) player.invuln -= deltaTime;
+
+                // HAFİF İLERİ DOĞRU ZIPLAMA ARTIŞI: Karakter yerdeyse hızı 3.5, havadaysa (zıpladıysa) hızı 4.1 oluyor.
+                let currentSpeed = isGrounded ? 3.5 : 4.1;
+                if(keys.l) player.vx = -currentSpeed * deltaTime; 
+                else if(keys.r) player.vx = currentSpeed * deltaTime; 
+                else player.vx *= Math.pow(0.82, deltaTime);
+                
                 player.vy += 0.35 * deltaTime; 
                 
                 player.x += player.vx;
@@ -860,13 +553,34 @@
                     e.x += e.dir * speedMultiplier * deltaTime; 
                     if(e.x > e.end || e.x < e.start) e.dir *= -1; 
                     if(player.x + player.w > e.x + 2 && player.x < e.x + 13 && player.y + player.h > e.y + 2 && player.y < e.y + 13) { 
-                        playSound('die'); loadLevel(true); 
+                        if (player.invuln <= 0) {
+                            if (player.isBig) {
+                                player.isBig = false;
+                                if (window.crouchState && window.crouchState.isCrouching) {
+                                    window.crouchState.isCrouching = false;
+                                } else {
+                                    player.h = 24;
+                                    player.y += 24; 
+                                }
+                                player.invuln = 60; 
+                                playSound('jump'); 
+                            } else {
+                                playSound('die'); 
+                                loadLevel(true); 
+                            }
+                        }
                     }
                 });
 
                 current.coins.forEach((c, index) => {
-                    if(Math.abs(player.x - c.x) < 18 && Math.abs(player.y - c.y) < 22) { current.coins.splice(index, 1); score++; document.getElementById("score").innerText = score; playSound('coin'); }
+                    if(Math.abs(player.x - c.x) < 18 && Math.abs(player.y - c.y) < (player.isBig ? 34 : 22)) { current.coins.splice(index, 1); score++; document.getElementById("score").innerText = score; playSound('coin'); }
                 });
+
+                if (current.growSquares) {
+                    current.growSquares.forEach((g, index) => {
+                        if(Math.abs(player.x - g.x) < 18 && Math.abs(player.y - g.y) < (player.isBig ? 34 : 22)) { current.growSquares.splice(index, 1); playSound('coin'); if (!player.isBig) { player.isBig = true; player.h = 48; player.y -= 24; } }
+                    });
+                }
 
                 current.checkpoints.forEach(cp => {
                     if (!cp.active && player.x + player.w >= cp.x && player.x <= cp.x + 15 && player.y + player.h >= cp.y - 30 && player.y <= cp.y) {
@@ -913,6 +627,10 @@
             });
             
             ctx.fillStyle = "gold"; current.coins.forEach(c => ctx.fillRect(c.x, c.y, 10, 10));
+
+            if (current.growSquares) {
+                ctx.fillStyle = "lime"; current.growSquares.forEach(g => ctx.fillRect(g.x, g.y, 10, 10));
+            }
             
             current.checkpoints.forEach(cp => {
                 ctx.fillStyle = "#ffffff"; ctx.fillRect(cp.x, cp.y - 30, 3, 30);
@@ -921,7 +639,13 @@
             });
 
             ctx.fillStyle = "yellow"; ctx.fillRect(current.finish.x, current.finish.y, current.finish.w, current.finish.h);
-            ctx.fillStyle = "blue"; ctx.fillRect(player.x, player.y, player.w, player.h);
+            
+            if (player.invuln > 0 && Math.floor(player.invuln / 4) % 2 === 0) {
+                // Flash effect
+            } else {
+                ctx.fillStyle = "blue"; ctx.fillRect(player.x, player.y, player.w, player.h);
+            }
+            
             ctx.restore();
             
             ctx.fillStyle = "white"; ctx.font = "bold 18px 'Courier New'"; ctx.textAlign = "center";
@@ -955,6 +679,109 @@
         loadLevel(false);
         applyLanguage();
         requestAnimationFrame(update);
+    </script>
+
+    <style>
+        #crouchBtn {
+            background: #555555;
+            box-shadow: 0px 4px 0px #000;
+        }
+        #crouchBtn:active {
+            transform: translateY(4px);
+            box-shadow: 0px 0px 0px #000;
+        }
+        @media (orientation: landscape) {
+            #controlWrapper { pointer-events: none; }
+            .move-group { pointer-events: auto; display: flex; align-items: center; gap: 10px; }
+            #crouchBtn { width: 70px; height: 70px; font-size: 26px; }
+        }
+    </style>
+
+    <script>
+        (function() {
+            const moveGroup = document.querySelector('.move-group');
+            if (moveGroup) {
+                const crouchBtn = document.createElement('button');
+                crouchBtn.id = 'crouchBtn';
+                crouchBtn.className = 'ctrl-btn';
+                crouchBtn.innerText = '▼';
+                moveGroup.appendChild(crouchBtn);
+
+                const startCrouch = (e) => {
+                    if (e) e.preventDefault();
+                    if (typeof initAudio === 'function') initAudio();
+                    if (gameState === 'play' && player.isBig) {
+                        if (!window.crouchState.isCrouching) {
+                            window.crouchState.isCrouching = true;
+                            player.h = 24;      
+                            player.y += 24;     
+                        }
+                    }
+                };
+
+                const endCrouch = (e) => {
+                    if (e) e.preventDefault();
+                    if (window.crouchState.isCrouching) {
+                        let canStandUp = true;
+                        let current = levels[level-1];
+                        let simulatedY = player.y - 24;
+                        
+                        current.plats.forEach(p => {
+                            if (player.x + player.w > p.x && player.x < p.x + p.w &&
+                                simulatedY + 48 > p.y && simulatedY < p.y + p.h) {
+                                canStandUp = false;
+                            }
+                        });
+                        
+                        let mp = current.movingPlat;
+                        if (player.x + player.w > mp.x && player.x < mp.x + mp.w &&
+                            simulatedY + 48 > mp.y && simulatedY < mp.y + mp.h) {
+                            canStandUp = false;
+                        }
+
+                        if (canStandUp) {
+                            window.crouchState.isCrouching = false;
+                            player.h = 48;
+                            player.y -= 24;
+                        }
+                    }
+                };
+
+                crouchBtn.addEventListener('touchstart', startCrouch, { passive: false });
+                crouchBtn.addEventListener('touchend', endCrouch, { passive: false });
+                crouchBtn.addEventListener('mousedown', startCrouch);
+                crouchBtn.addEventListener('mouseup', endCrouch);
+                crouchBtn.addEventListener('mouseleave', endCrouch);
+
+                window.addEventListener('keydown', (e) => {
+                    if (e.key === 'Control' || e.key === 's' || e.key === 'ArrowDown') startCrouch();
+                });
+                window.addEventListener('keyup', (e) => {
+                    if (e.key === 'Control' || e.key === 's' || e.key === 'ArrowDown') endCrouch();
+                });
+            }
+
+            if (typeof ctx !== 'undefined') {
+                const originalFillRect = ctx.fillRect;
+                ctx.fillRect = function(x, y, w, h) {
+                    if (typeof player !== 'undefined' && 
+                        Math.abs(w - player.w) < 0.1 && 
+                        Math.abs(h - player.h) < 0.1 &&
+                        Math.abs(x - player.x) < 2 &&
+                        Math.abs(y - player.y) < 2) {
+                        
+                        if (window.crouchState.isCrouching) {
+                            let oldStyle = ctx.fillStyle;
+                            ctx.fillStyle = "darkblue";
+                            originalFillRect.apply(this, arguments);
+                            ctx.fillStyle = oldStyle;
+                            return;
+                        }
+                    }
+                    originalFillRect.apply(this, arguments);
+                };
+            }
+        })();
     </script>
 </body>
 </html>
