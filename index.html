@@ -101,17 +101,14 @@
 
     <div style="position: relative; display: flex; justify-content: center; width: 100%; align-items: center;">
         
-        <!-- ANA AYARLAR MENÜSÜ -->
         <div id="settingsMenu" class="modal-menu">
             <div class="menu-title" id="lbl-settings">SETTINGS / AYARLAR</div>
             
-            <!-- MÜZİK SESİ -->
             <div class="volume-container">
                 <span id="lbl-music-volume">MUSIC / MÜZİK: 100%</span>
                 <input type="range" id="musicSlider" class="volume-slider" min="0" max="1" step="0.05" value="0.4">
             </div>
 
-            <!-- EFEKT SESİ -->
             <div class="volume-container">
                 <span id="lbl-sfx-volume">SFX / EFEKT: 100%</span>
                 <input type="range" id="sfxSlider" class="volume-slider" min="0" max="1" step="0.05" value="0.6">
@@ -122,7 +119,6 @@
             <button class="close-btn" onclick="closeMenus()" id="lbl-close">CLOSE</button>
         </div>
 
-        <!-- DİL MENÜSÜ -->
         <div id="langMenu" class="modal-menu">
             <div class="menu-title" id="lbl-lang-title">SELECT LANGUAGE</div>
             <div class="lang-list">
@@ -142,12 +138,11 @@
             <button class="close-btn" onclick="backToMainMenu()" id="lbl-back">BACK / GERİ</button>
         </div>
 
-        <!-- HAKKINDA MENÜSÜ -->
         <div id="aboutMenu" class="modal-menu">
-            <div class="menu-title">ABOUT / HAKKINDA</div>
+            <div class="menu-title" id="lbl-about-title">ABOUT / HAKKINDA</div>
             <div class="about-text" id="aboutText">
-                <strong>GAME</strong><br>
-                Version / Sürüm: 5.0
+                <strong>Game</strong><br>
+                Version / Sürüm: 5.1
             </div>
             <button class="close-btn" onclick="backToMainMenu()" id="lbl-about-back">BACK / GERİ</button>
         </div>
@@ -170,29 +165,57 @@
 
     <script>
         const dictionary = {
-            tr: { level: "SEVİYE", gold: "ALTIN", settings: "AYARLAR", close: "KAPAT", langBtn: "🌐 DİL SEÇİMİ", langTitle: "DİL SEÇİNİZ", back: "GERİ", download: "📥 APK İNDİR / GÜNCELLE", gameover: "OYUN BİTTİ", win: "TEBRİKLER! TÜM BÖLÜMLERİ GEÇTİN!", mVol: "MÜZİK SESİ", sVol: "EFEKT SESİ", aboutBtn: "ℹ️ HAKKINDA", pause: "DURDUR", resume: "DEVAM ET", rtl: false },
-            en: { level: "LEVEL", gold: "GOLD", settings: "SETTINGS", close: "CLOSE", langBtn: "🌐 LANGUAGE", langTitle: "SELECT LANGUAGE", back: "BACK", download: "📥 DOWNLOAD / UPDATE APK", gameover: "GAME OVER", win: "YOU WIN ALL LEVELS!", mVol: "MUSIC VOLUME", sVol: "SFX VOLUME", aboutBtn: "ℹ️ ABOUT", pause: "PAUSE", resume: "RESUME", rtl: false },
-            de: { level: "STUFE", gold: "GOLD", settings: "EINSTELLUNGEN", close: "SCHLIESSEN", langBtn: "🌐 SPRACHE", langTitle: "SPRACHE WÄHLEN", back: "ZURÜCK", download: "📥 APK HERUNTERLADEN / AKTUALISIEREN", gameover: "SPIEL VORBEI", win: "ALLE STUFEN GEWONNEN!", mVol: "MUSIKLAUTSTÄRKE", sVol: "EFFEKTLAUTSTÄRKE", aboutBtn: "ℹ️ ÜBER SPIEL", pause: "PAUSE", resume: "WEITER", rtl: false },
-            it: { level: "LIVELLO", gold: "ORO", settings: "IMPOSTAZIONI", close: "CHIUDI", langBtn: "🌐 LINGUA", langTitle: "SCEGLI LINGUA", back: "INDIETRO", download: "📥 SCARICA / AGGIORNA APK", gameover: "GAME OVER", win: "HAI VINTO TUTTI I LIVELLI!", mVol: "VOLUME MUSICA", sVol: "VOLUME EFFETTI", aboutBtn: "ℹ️ INFO", pause: "PAUSA", resume: "RIPRENDI", rtl: false },
-            pt: { level: "NÍVEL", gold: "OURO", settings: "OPÇÕES", close: "FECHAR", langBtn: "🌐 IDIOMA", langTitle: "SELECIONAR IDIOMA", back: "VOLTAR", download: "📥 BAIXAR / ATUALIZAR APK", gameover: "FIM DE JOGO", win: "VOCÊ VENCEU TODOS OS NÍVEIS!", mVol: "VOLUME DA MÚSICA", sVol: "VOLUME DOS EFEITOS", aboutBtn: "ℹ️ SOBRE", pause: "PAUSAR", resume: "CONTINUAR", rtl: false },
-            es: { level: "NIVEL", gold: "ORO", settings: "AJUSTES", close: "CERRAR", langBtn: "🌐 IDIOMA", langTitle: "SELECONAR IDIOMA", back: "ATRÁS", download: "📥 DESCARGAR / ACTUALIZAR APK", gameover: "JUEGO TERMINADO", win: "¡GANASTE TODOS LOS NIVELLES!", mVol: "VOLUMEN MÚSICA", sVol: "VOLUMEN EFECTOS", aboutBtn: "ℹ️ ACERCA DE", pause: "PAUSA", resume: "REANUDAR", rtl: false },
-            fr: { level: "NIVEAU", gold: "OR", settings: "RÉGLAGES", close: "FERMER", langBtn: "🌐 LANGUE", langTitle: "CHOISIR LA LANGUE", back: "RETOUR", download: "📥 TÉLÉCHARGER / METTRE À JOUR APK", gameover: "FIN DE JEU", win: "VOUS AVEZ GAGNÉ TOUS LES NIVEAUX!", mVol: "VOLUME MUSIQUE", sVol: "VOLUME EFFETS", aboutBtn: "ℹ️ À PROPOS", pause: "PAUSE", resume: "REPRENDRE", rtl: false },
-            ja: { level: "レベル", gold: "ゴールド", settings: "設定", close: "閉じる", langBtn: "🌐 言語選択", langTitle: "言語を選択してください", back: "戻る", download: "📥 APK ダウンロード / アップデート", gameover: "ゲームオーバー", win: "すべてのレベル teba をクリアしました！", mVol: "BGM音量", sVol: "SE音量", aboutBtn: "ℹ️ 情報", pause: "一時停止", resume: "再開", rtl: false },
-            ru: { level: "УРОВЕНЬ", gold: "ЗОЛОТО", settings: "НАСТРОЙКИ", close: "ЗАКРЫТЬ", langBtn: "🌐 ЯЗЫК", langTitle: "ВЫБЕРИТЕ ЯЗЫК", back: "НАЗАД", download: "📥 СКАЧАТЬ / ОБНОВИТЬ APK", gameover: "ИГРА ОКОНЧЕНА", win: "ВЫ ВЫИГРАЛИ ВСЕ УРОВНИ!", mVol: "ГРОМКОСТЬ БГМ", sVol: "ГРОМКОСТЬ ЗВУКОВ", aboutBtn: "ℹ️ О ПРОГРАММЕ", pause: "ПАУЗА", resume: "ПРОДОЛЖИТЬ", rtl: false },
-            fa: { level: "مرحله", gold: "طلا", settings: "تنظیمات", close: "بستن", langBtn: "🌐 انتخاب زبان", langTitle: "زبان را escape کنید", back: "بازگشت", download: "📥 دانلود / بروزرسانی برنامه", gameover: "بازی تمام شد", win: "شما برنده تمام مراحل شدید!", mVol: "حجم صدای موزیک", sVol: "حجم صدای جلوه ها", aboutBtn: "ℹ️ درباره بازی", pause: "توقف", resume: "ادامه", rtl: true },
-            zh: { level: "关卡", gold: "金币", settings: "设置", close: "关闭", langBtn: "🌐 语言", langTitle: "选择语言", back: "返回", download: "📥 下载 / 更新 APK", gameover: "游戏结束", win: "你赢了所有关卡！", mVol: "音乐音量", sVol: "音效音量", aboutBtn: "ℹ️ 关于", pause: "暂停", resume: "继续", rtl: false },
-            ar: { level: "المستوى", gold: "الذهب", settings: "الإعدادات", close: "إغلاق", langBtn: "🌐 اللغة", langTitle: "اختر اللغة", back: "عودة", download: "📥 تنزيل / تحديث APK", gameover: "لعبة انتهت", win: "لقد فزت بجميع المستويات!", mVol: "صوت الموسيقى", sVol: "صوت المؤثرات", aboutBtn: "ℹ️ حول", pause: "إيقاف", resume: "استئناف", rtl: true }
+            tr: { level: "SEVİYE", gold: "ALTIN", settings: "AYARLAR", close: "KAPAT", langBtn: "🌐 DİL SEÇİMİ", langTitle: "DİL SEÇİNİZ", back: "GERİ", download: "📥 APK İNDİR / GÜNCELLE", gameover: "OYUN BİTTİ", win: "TEBRİKLER! TÜM BÖLÜMLERİ GEÇTİN!", mVol: "MÜZİK SESİ", sVol: "EFEKT SESİ", aboutBtn: "ℹ️ HAKKINDA", aboutTitle: "HAKKINDA", aboutText: "<strong>Game</strong><br>Sürüm: 5.1", pause: "DURDUR", resume: "DEVAM ET", rtl: false },
+            en: { level: "LEVEL", gold: "GOLD", settings: "SETTINGS", close: "CLOSE", langBtn: "🌐 LANGUAGE", langTitle: "SELECT LANGUAGE", back: "BACK", download: "📥 DOWNLOAD / UPDATE APK", gameover: "GAME OVER", win: "YOU WIN ALL LEVELS!", mVol: "MUSIC VOLUME", sVol: "SFX VOLUME", aboutBtn: "ℹ️ ABOUT", aboutTitle: "ABOUT", aboutText: "<strong>Game</strong><br>Version: 5.1", pause: "PAUSE", resume: "RESUME", rtl: false },
+            de: { level: "STUFE", gold: "GOLD", settings: "EINSTELLUNGEN", close: "SCHLIESSEN", langBtn: "🌐 SPRACHE", langTitle: "SPRACHE WÄHLEN", back: "ZURÜCK", download: "📥 APK HERUNTERLADEN / AKTUALISIEREN", gameover: "SPIEL VORBEI", win: "ALLE STUFEN GEWONNEN!", mVol: "MUSIKLAUTSTÄRKE", sVol: "EFFEKTLAUTSTÄRKE", aboutBtn: "ℹ️ ÜBER SPIEL", aboutTitle: "ÜBER SPIEL", aboutText: "<strong>Game</strong><br>Version: 5.1", pause: "PAUSE", resume: "WEITER", rtl: false },
+            it: { level: "LIVELLO", gold: "ORO", settings: "IMPOSTAZIONI", close: "CHIUDI", langBtn: "🌐 LINGUA", langTitle: "SCEGLI LINGUA", back: "INDIETRO", download: "📥 SCARICA / AGGIORNA APK", gameover: "GAME OVER", win: "HAI VINTO TUTTI I LIVELLI!", mVol: "VOLUME MUSICA", sVol: "VOLUME EFFETTI", aboutBtn: "ℹ️ INFO", aboutTitle: "INFO", aboutText: "<strong>Game</strong><br>Versione: 5.1", pause: "PAUSA", resume: "RIPRENDI", rtl: false },
+            pt: { level: "NÍVEL", gold: "OURO", settings: "OPÇÕES", close: "FECHAR", langBtn: "🌐 IDIOMA", langTitle: "SELECIONAR IDIOMA", back: "VOLTAR", download: "📥 BAIXAR / ATUALIZAR APK", gameover: "FIM DE JOGO", win: "VOCÊ VENCEU TODOS OS NÍVEIS!", mVol: "VOLUME DA MÚSICA", sVol: "VOLUME DOS EFEITOS", aboutBtn: "ℹ️ SOBRE", aboutTitle: "SOBRE", aboutText: "<strong>Game</strong><br>Versão: 5.1", pause: "PAUSAR", resume: "CONTINUAR", rtl: false },
+            es: { level: "NIVEL", gold: "ORO", settings: "AJUSTES", close: "CERRAR", langBtn: "🌐 IDIOMA", langTitle: "SELECONAR IDIOMA", back: "ATRÁS", download: "📥 DESCARGAR / ACTUALIZAR APK", gameover: "JUEGO TERMINADO", win: "¡GANASTE TODOS LOS NIVELLES!", mVol: "VOLUMEN MÚSICA", sVol: "VOLUMEN EFECTOS", aboutBtn: "ℹ️ ACERCA DE", aboutTitle: "ACERCA DE", aboutText: "<strong>Game</strong><br>Versión: 5.1", pause: "PAUSA", resume: "REANUDAR", rtl: false },
+            fr: { level: "NIVEAU", gold: "OR", settings: "RÉGLAGES", close: "FERMER", langBtn: "🌐 LANGUE", langTitle: "CHOISIR LA LANGUE", back: "RETOUR", download: "📥 TÉLÉCHARGER / METTRE À JOUR APK", gameover: "FIN DE JEU", win: "VOUS AVEZ GAGNÉ TOUS LES NIVEAUX!", mVol: "VOLUME MUSIQUE", sVol: "VOLUME EFFETS", aboutBtn: "ℹ️ À PROPOS", aboutTitle: "À PROPOS", aboutText: "<strong>Game</strong><br>Version: 5.1", pause: "PAUSE", resume: "REPRENDRE", rtl: false },
+            ja: { level: "レベル", gold: "ゴールド", settings: "設定", close: "閉じる", langBtn: "🌐 言語選択", langTitle: "言語を選択してください", back: "戻る", download: "📥 APK ダウンロード / アップデート", gameover: "ゲームオーバー", win: "すべてのレベル teba をクリアしました！", mVol: "BGM音量", sVol: "SE音量", aboutBtn: "ℹ️ 情報", aboutTitle: "情報", aboutText: "<strong>Game</strong><br>バージョン: 5.1", pause: "一時停止", resume: "再開", rtl: false },
+            ru: { level: "УРОВЕНЬ", gold: "ЗОЛОТО", settings: "НАСТРОЙКИ", close: "ЗАКРЫТЬ", langBtn: "🌐 ЯЗЫК", langTitle: "ВЫБЕРИТЕ ЯЗЫК", back: "НАЗАД", download: "📥 СКАЧАТЬ / ОБНОВИТЬ APK", gameover: "ИГРА ОКОНЧЕНА", win: "ВЫ ВЫИГРАЛИ ВСЕ УРОВНИ!", mVol: "ГРОМКОСТЬ БГМ", sVol: "ГРОМКОСТЬ ЗВУКОВ", aboutBtn: "ℹ️ О ПРОГРАММЕ", aboutTitle: "О ПРОГРАММЕ", aboutText: "<strong>Game</strong><br>Версия: 5.1", pause: "ПАУЗА", resume: "ПРОДОЛЖИТЬ", rtl: false },
+            fa: { level: "مرحله", gold: "طلا", settings: "تنظیمات", close: "بستن", langBtn: "🌐 انتخاب زبان", langTitle: "زبان را escape کنید", back: "بازگشت", download: "📥 دانلود / بروزرسانی برنامه", gameover: "بازی تمام شد", win: "شما برنده تمام مراحل شدید!", mVol: "حجم صدای موزیک", sVol: "حجم صدای جلوه ها", aboutBtn: "ℹ️ درباره بازی", aboutTitle: "درباره بازی", aboutText: "<strong>Game</strong><br>نسخه: 5.1", pause: "توقف", resume: "ادامه", rtl: true },
+            zh: { level: "关卡", gold: "金币", settings: "设置", close: "关闭", langBtn: "🌐 语言", langTitle: "选择语言", back: "返回", download: "📥 下载 / 更新 APK", gameover: "游戏结束", win: "你赢了所有关卡！", mVol: "音乐音量", sVol: "音效音量", aboutBtn: "ℹ️ 关于", aboutTitle: "关于", aboutText: "<strong>Game</strong><br>版本: 5.1", pause: "暂停", resume: "继续", rtl: false },
+            ar: { level: "المستوى", gold: "الذهب", settings: "الإعدادات", close: "إغلاق", langBtn: "🌐 اللغة", langTitle: "اختر اللغة", back: "عودة", download: "📥 تنزيل / تحديث APK", gameover: "لعبة انتهت", win: "لقد فزت بجميع المستويات!", mVol: "صوت الموسيقى", sVol: "صunt المؤثرات", aboutBtn: "ℹ️ حول", aboutTitle: "حول", aboutText: "<strong>Game</strong><br>الإصدار: 5.1", pause: "إيقاف", resume: "استئناف", rtl: true }
         };
 
         let currentLang = localStorage.getItem("altay_lang") || "en";
         let musicVolume = parseFloat(localStorage.getItem("altay_music_vol") ?? "0.3");
         let sfxVolume = parseFloat(localStorage.getItem("altay_sfx_vol") ?? "0.5");
 
-        function openMainMenu() { document.getElementById("settingsMenu").style.display = "flex"; document.getElementById("langMenu").style.display = "none"; document.getElementById("aboutMenu").style.display = "none"; }
-        function openLangMenu() { document.getElementById("settingsMenu").style.display = "none"; document.getElementById("langMenu").style.display = "flex"; }
-        function openAboutMenu() { document.getElementById("settingsMenu").style.display = "none"; document.getElementById("aboutMenu").style.display = "flex"; }
+        function openMainMenu() { 
+            triggerAutoPause();
+            document.getElementById("settingsMenu").style.display = "flex"; 
+            document.getElementById("langMenu").style.display = "none"; 
+            document.getElementById("aboutMenu").style.display = "none"; 
+        }
+        function openLangMenu() { 
+            triggerAutoPause();
+            document.getElementById("settingsMenu").style.display = "none"; 
+            document.getElementById("langMenu").style.display = "flex"; 
+        }
+        function openAboutMenu() { 
+            triggerAutoPause();
+            document.getElementById("settingsMenu").style.display = "none"; 
+            document.getElementById("aboutMenu").style.display = "flex"; 
+        }
         function backToMainMenu() { document.getElementById("langMenu").style.display = "none"; document.getElementById("aboutMenu").style.display = "none"; document.getElementById("settingsMenu").style.display = "flex"; }
-        function closeMenus() { document.getElementById("settingsMenu").style.display = "none"; document.getElementById("langMenu").style.display = "none"; document.getElementById("aboutMenu").style.display = "none"; }
+        
+        function closeMenus() { 
+            document.getElementById("settingsMenu").style.display = "none"; 
+            document.getElementById("langMenu").style.display = "none"; 
+            document.getElementById("aboutMenu").style.display = "none"; 
+            
+            if(gameState === "paused") {
+                gameState = "play";
+                document.getElementById("pauseBtn").innerText = dictionary[currentLang].pause;
+                lastTime = performance.now();
+                if(audioCtx && !document.hidden) {
+                    audioCtx.resume();
+                    nextMusicNoteTime = audioCtx.currentTime;
+                }
+            }
+        }
         function changeLanguage(lang) { currentLang = lang; localStorage.setItem("altay_lang", lang); applyLanguage(); backToMainMenu(); }
         
         const mSlider = document.getElementById("musicSlider");
@@ -239,6 +262,8 @@
             document.getElementById("lbl-about-back").innerText = langData.back;
             document.getElementById("dl-btn").innerText = langData.download;
             document.getElementById("lbl-about-btn").innerText = langData.aboutBtn;
+            document.getElementById("lbl-about-title").innerText = langData.aboutTitle;
+            document.getElementById("aboutText").innerHTML = langData.aboutText;
             
             const pBtn = document.getElementById("pauseBtn");
             if(gameState === "paused") pBtn.innerText = langData.resume;
@@ -525,7 +550,7 @@
                     {x:640, y:130}, {x:670, y:130}, {x:700, y:130},
                     {x:920, y:190}, {x:950, y:190}, {x:980, y:190},
                     {x:330, y:120}, {x:360, y:120}, {x:390, y:120},
-                    {x:1550, y:100}, {x:1580, y:100}, {x:1610, y:100}
+                    {x:1550, y:100}, {x:1580, y:100}, {x:1610, y:110}
                 ], 
                 checkpoints: [{x:920, y:230, active:false}], 
                 finish: {x:2350, y:230, w:30, h:40}
@@ -650,7 +675,7 @@
                 ], 
                 coins: [
                     {x:80, y:240}, {x:110, y:240}, {x:140, y:240},
-                    {x:370, y:160}, {x:400, y:160}, {x:430, y:160},
+                    {x:370, y:160}, {x:400, y:170}, {x:430, y:160},
                     {x:630, y:200}, {x:660, y:200}, {x:690, y:200},
                     {x:890, y:140}, {x:920, y:140}, {x:950, y:140},
                     {x:330, y:110}, {x:360, y:110}, {x:390, y:110},
@@ -908,6 +933,24 @@
             }
             document.getElementById("level").innerText = level;
         }
+
+        function triggerAutoPause() {
+            if (gameState === "play") {
+                gameState = "paused";
+                document.getElementById("pauseBtn").innerText = dictionary[currentLang].resume;
+                if (audioCtx) audioCtx.suspend();
+            }
+        }
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+                triggerAutoPause();
+            }
+        });
+
+        window.addEventListener("blur", () => {
+            triggerAutoPause();
+        });
 
         loadLevel(false);
         applyLanguage();
